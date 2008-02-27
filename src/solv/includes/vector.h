@@ -7,13 +7,19 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+
+/** @file vector.h
+ * This header file declares methods related to the vector structure.
+ *
+ * @author Dominik Dahlem
+ */
 #ifndef __VECTOR_H
 #define __VECTOR_H
 
 #include "cds_matrix.h"
 
 
-/**
+/** @fnvoid zero(const vector *vec)
  * Zero each element of the given vector.
  *
  * @param vector* the vector to be set to (0, 0, ..., 0).
