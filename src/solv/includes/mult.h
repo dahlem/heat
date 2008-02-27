@@ -24,5 +24,18 @@
  */
 void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *v);
 
+/**
+ * This operation performs the matrix-vector multiply using a matrix in compressed
+ * diagonal storage format. The multiplication algorithm assumes a
+ * generic banded matrix with n diagonals. The off-main diagonals have leading
+ * and trailing zeros for the lower and upper diagonals respectively.
+ *
+ * @param const cdsgb_matrix *const the matrix in CDS format
+ * @param const vector *const the u vector
+ * @param const vector* the result vector
+ */
+void dcdsgbmv(const cdsgb_matrix *const mat, const vector *const u, const vector *v);
+
+
 
 #endif

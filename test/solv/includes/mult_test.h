@@ -19,11 +19,17 @@ void registerMultTests();
 
 
 
-void testMultiplication();
+void testMultiplicationSymmetricBanded();
+void testMultiplicationGenericBanded1();
+void testMultiplicationGenericBanded2();
+void testMultiplicationGenericBanded3();
 
 
 static CU_TestInfo test_mult[] = {
-    { "testMultiplication", testMultiplication },
+    { "testMultiplicationSymmetricBanded", testMultiplicationSymmetricBanded },
+    { "testMultiplicationGenericBanded1", testMultiplicationGenericBanded1 },
+    { "testMultiplicationGenericBanded2", testMultiplicationGenericBanded2 },
+    { "testMultiplicationGenericBanded3", testMultiplicationGenericBanded3 },
     CU_TEST_INFO_NULL,
 };
 

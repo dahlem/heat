@@ -29,7 +29,7 @@ void registerMultTests()
     }
 }
 
-void testMultiplication()
+void testMultiplicationSymmetricBanded()
 {
     int i, j;
     gsl_matrix *A_gsl;
@@ -104,6 +104,316 @@ void testMultiplication()
     vector_free(&u);
     vector_free(&v);
     cds_matrix_free(&A);
+    
+    gsl_vector_free(temp);
+    gsl_vector_free(u_gsl);
+    gsl_matrix_free(A_gsl);
+}
+
+void testMultiplicationGenericBanded1()
+{
+    int i, j;
+    gsl_matrix *A_gsl;
+    gsl_vector *u_gsl, *temp;
+    cdsgb_matrix A;
+    vector u, v;
+    int elems[5];
+    int index[5];
+
+    A_gsl = gsl_matrix_calloc(3, 9);
+    u_gsl = gsl_vector_alloc(9);
+    temp = gsl_vector_calloc(3);
+
+    /* init the u vector */
+    gsl_vector_set_all(u_gsl, 2);
+
+    /* assign values */
+    for (i = 0; i < A_gsl->size1; ++i) {
+        for (j = 0; j < A_gsl->size2; ++j) {
+            /* assign values to the diagonal */
+            if (i == j) {
+                gsl_matrix_set(A_gsl, i, j, 4);
+            }
+
+            /* assign upper/lower diagonal with offset 1 */
+            if (j == (i + 1)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+
+            /* assign upper/lower diagonal with offset -1 */
+            if (i == (j + 1)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+
+            /* assign the upper/lower diagonal with offset 3  */
+            if (j == (i + 3)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+        }
+    }
+
+    gsl_blas_dgemv(CblasNoTrans, 1.0, A_gsl, u_gsl, 0.0, temp);
+
+    /* allocate memory for the bands */
+    elems[0] = 3;
+    elems[1] = 3;
+    elems[2] = 3;
+    elems[3] = 3;
+    elems[4] = 3;
+
+    index[0] = -3;
+    index[1] = -1;
+    index[2] = 0;
+    index[3] = 1;
+    index[4] = 3;
+
+    cdsgb_matrix_alloc(&A, 5, elems, index);
+    
+    /* assign values */
+    for (i = 1; i < A.diags[0].len; ++i) {
+        A.diags[0].data[i] = 0;
+    }
+    A.diags[1].data[0] = 0;
+    for (i = 1; i < A.diags[1].len; ++i) {
+        A.diags[1].data[i] = -1;
+    }
+    for (i = 0; i < A.diags[2].len; ++i) {
+        A.diags[2].data[i] = 4;
+    }
+    for (i = 0; i < A.diags[3].len; ++i) {
+        A.diags[3].data[i] = -1;
+    }
+    for (i = 0; i < A.diags[4].len; ++i) {
+        A.diags[4].data[i] = -1;
+    }
+
+    vector_alloc(&u, 9);
+    vector_alloc(&v, 3);
+
+    for (i = 0; i < 9; ++i) {
+        u.data[i] = 2;
+    }
+
+    dcdsgbmv(&A, &u, &v);
+
+    for (i = 0; i < temp->size; ++i) {
+        CU_ASSERT_DOUBLE_EQUAL(
+            gsl_vector_get(temp, i),
+            v.data[i],
+            0.01);
+    }
+    
+    vector_free(&u);
+    vector_free(&v);
+    cdsgb_matrix_free(&A);
+    
+    gsl_vector_free(temp);
+    gsl_vector_free(u_gsl);
+    gsl_matrix_free(A_gsl);
+}
+
+void testMultiplicationGenericBanded2()
+{
+    int i, j;
+    gsl_matrix *A_gsl;
+    gsl_vector *u_gsl, *temp;
+    cdsgb_matrix A;
+    vector u, v;
+    int elems[5];
+    int index[5];
+
+    A_gsl = gsl_matrix_calloc(3, 9);
+    u_gsl = gsl_vector_alloc(9);
+    temp = gsl_vector_calloc(3);
+
+    /* init the u vector */
+    gsl_vector_set_all(u_gsl, 2);
+
+    /* assign values */
+    for (i = 0; i < A_gsl->size1; ++i) {
+        for (j = 0; j < A_gsl->size2; ++j) {
+            /* assign values to the diagonal */
+            if (i == j) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+
+            /* assign upper/lower diagonal with offset 1 */
+            if (j == (i + 2)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+
+            /* assign the upper/lower diagonal with offset 3  */
+            if (j == (i + 3)) {
+                gsl_matrix_set(A_gsl, i, j, 4);
+            }
+
+            /* assign the upper/lower diagonal with offset 4  */
+            if (j == (i + 4)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+
+            /* assign the upper/lower diagonal with offset 6  */
+            if (j == (i + 6)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+        }
+    }
+
+    gsl_blas_dgemv(CblasNoTrans, 1.0, A_gsl, u_gsl, 0.0, temp);
+
+    /* allocate memory for the bands */
+    elems[0] = 3;
+    elems[1] = 3;
+    elems[2] = 3;
+    elems[3] = 3;
+    elems[4] = 3;
+
+    index[0] = 0;
+    index[1] = 2;
+    index[2] = 3;
+    index[3] = 4;
+    index[4] = 6;
+
+    cdsgb_matrix_alloc(&A, 5, elems, index);
+    
+    /* assign values */
+    for (i = 1; i < A.diags[0].len; ++i) {
+        A.diags[0].data[i] = -1;
+    }
+    for (i = 0; i < A.diags[1].len; ++i) {
+        A.diags[1].data[i] = -1;
+    }
+    for (i = 0; i < A.diags[2].len; ++i) {
+        A.diags[2].data[i] = 4;
+    }
+    for (i = 0; i < A.diags[3].len; ++i) {
+        A.diags[3].data[i] = -1;
+    }
+    for (i = 0; i < A.diags[4].len; ++i) {
+        A.diags[4].data[i] = -1;
+    }
+
+    vector_alloc(&u, 9);
+    vector_alloc(&v, 3);
+
+    for (i = 0; i < 9; ++i) {
+        u.data[i] = 2;
+    }
+
+    dcdsgbmv(&A, &u, &v);
+
+    for (i = 0; i < temp->size; ++i) {
+        CU_ASSERT_DOUBLE_EQUAL(
+            gsl_vector_get(temp, i),
+            v.data[i],
+            0.01);
+    }
+    
+    vector_free(&u);
+    vector_free(&v);
+    cdsgb_matrix_free(&A);
+    
+    gsl_vector_free(temp);
+    gsl_vector_free(u_gsl);
+    gsl_matrix_free(A_gsl);
+}
+
+void testMultiplicationGenericBanded3()
+{
+    int i, j;
+    gsl_matrix *A_gsl;
+    gsl_vector *u_gsl, *temp;
+    cdsgb_matrix A;
+    vector u, v;
+    int elems[5];
+    int index[5];
+
+    A_gsl = gsl_matrix_calloc(3, 9);
+    u_gsl = gsl_vector_alloc(9);
+    temp = gsl_vector_calloc(3);
+
+    /* init the u vector */
+    gsl_vector_set_all(u_gsl, 2);
+
+    /* assign values */
+    for (i = 0; i < A_gsl->size1; ++i) {
+        for (j = 0; j < A_gsl->size2; ++j) {
+            /* assign values to the diagonal with offset 3*/
+            if (j == (i + 3)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+
+            /* assign upper/lower diagonal with offset 5 */
+            if (j == (i + 5)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+
+            /* assign the upper/lower diagonal with offset 6  */
+            if (j == (i + 6)) {
+                gsl_matrix_set(A_gsl, i, j, 4);
+            }
+
+            /* assign the upper/lower diagonal with offset 7  */
+            if (j == (i + 7)) {
+                gsl_matrix_set(A_gsl, i, j, -1);
+            }
+        }
+    }
+
+    gsl_blas_dgemv(CblasNoTrans, 1.0, A_gsl, u_gsl, 0.0, temp);
+
+    /* allocate memory for the bands */
+    elems[0] = 3;
+    elems[1] = 3;
+    elems[2] = 3;
+    elems[3] = 3;
+    elems[4] = 3;
+
+    index[0] = 3;
+    index[1] = 5;
+    index[2] = 6;
+    index[3] = 7;
+    index[4] = 9;
+
+    cdsgb_matrix_alloc(&A, 5, elems, index);
+    
+    /* assign values */
+    for (i = 1; i < A.diags[0].len; ++i) {
+        A.diags[0].data[i] = -1;
+    }
+    for (i = 0; i < A.diags[1].len; ++i) {
+        A.diags[1].data[i] = -1;
+    }
+    for (i = 0; i < A.diags[2].len; ++i) {
+        A.diags[2].data[i] = 4;
+    }
+    for (i = 0; i < (A.diags[3].len - 1); ++i) {
+        A.diags[3].data[i] = -1;
+    }
+    A.diags[3].data[2] = 0;
+    for (i = 0; i < A.diags[4].len; ++i) {
+        A.diags[4].data[i] = 0;
+    }
+
+    vector_alloc(&u, 9);
+    vector_alloc(&v, 3);
+
+    for (i = 0; i < 9; ++i) {
+        u.data[i] = 2;
+    }
+
+    dcdsgbmv(&A, &u, &v);
+
+    for (i = 0; i < temp->size; ++i) {
+        CU_ASSERT_DOUBLE_EQUAL(
+            gsl_vector_get(temp, i),
+            v.data[i],
+            0.01);
+    }
+    
+    vector_free(&u);
+    vector_free(&v);
+    cdsgb_matrix_free(&A);
     
     gsl_vector_free(temp);
     gsl_vector_free(u_gsl);

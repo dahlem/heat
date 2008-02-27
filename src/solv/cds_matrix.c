@@ -44,5 +44,33 @@ void cds_matrix_free(cds_matrix *mat)
     for (i = 0; i < mat->len; ++i) {
         vector_free(&(mat->diags[i]));
     }
+
     free(mat->diags);
+}
+
+void cdsgb_matrix_alloc(cdsgb_matrix *mat, int len, int *elem, int *index)
+{
+    int i;
+    
+    mat->len = len;
+    mat->diags = malloc(sizeof(vector) * len);
+    mat->index = malloc(sizeof(int) * len);
+
+    /* allocate memory for the bands */
+    for (i = 0; i < len; ++i) {
+        vector_alloc(&(mat->diags[i]), elem[i]);
+        mat->index[i] = index[i];
+    }
+}
+
+void cdsgb_matrix_free(cdsgb_matrix *mat)
+{
+    int i;
+
+    for (i = 0; i < mat->len; ++i) {
+        vector_free(&(mat->diags[i]));
+    }
+
+    free(mat->diags);
+    free(mat->index);
 }

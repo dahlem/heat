@@ -7,36 +7,18 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#ifndef __CDS_MATRIX_H
-#define __CDS_MATRIX_H
+#ifndef __VECTOR_H
+#define __VECTOR_H
+
+#include "cds_matrix.h"
 
 
-typedef struct
-{
-    int len;
-    double *data;
-} vector;
-
-typedef struct 
-{
-    int len;
-    vector *diags;
-} cds_matrix;
-
-typedef struct 
-{
-    int len;
-    int *index;
-    vector *diags;
-} cdsgb_matrix;
-
-
-void vector_alloc(vector *vec, int len);
-void vector_free(vector *vec);
-void cds_matrix_alloc(cds_matrix *mat, int len, int *elem);
-void cds_matrix_free(cds_matrix *mat);
-void cdsgb_matrix_alloc(cdsgb_matrix *mat, int len, int *elem, int *index);
-void cdsgb_matrix_free(cdsgb_matrix *mat);
+/**
+ * Zero each element of the given vector.
+ *
+ * @param vector* the vector to be set to (0, 0, ..., 0).
+ */
+void zero(const vector *vec);
 
 
 #endif

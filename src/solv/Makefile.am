@@ -12,6 +12,7 @@ noinst_LTLIBRARIES = libsolvers.la
 
 libsolvers_la_SOURCES =                                               \
 	cds_matrix.c                                                  \
+	vector.c                                                      \
 	mult.c
 #	conjugate.c
 

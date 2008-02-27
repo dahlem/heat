@@ -7,7 +7,11 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include <gsl/gsl_math.h>
+
 #include "mult.h"
+#include "vector.h"
+
 
 
 void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *v)
@@ -32,6 +36,24 @@ void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *
             if ((i - p) >= 0) {
                 v->data[i] += mat->diags[j].data[i - p] * u->data[i - p];
             }
+        }
+    }
+}
+
+void dcdsgbmv(const cdsgb_matrix *const mat, const vector *const u, const vector *v)
+{
+    int i, j;
+    int row, column;
+    
+    zero(v);
+
+    for (i = 0; i < mat->len; ++i) {
+        for (j = GSL_MAX(0, 0 - mat->index[i]);
+             j < GSL_MIN(mat->diags[i].len, u->len - mat->index[i]);
+             ++j) {
+            v->data[j] +=
+                mat->diags[i].data[j]
+                * u->data[j + mat->index[i]];
         }
     }
 }

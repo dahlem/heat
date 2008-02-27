@@ -3,3 +3,5 @@
 /libsolvers_la-cds_matrix.o
 /libsolvers_la-mult.lo
 /libsolvers_la-mult.o
+/libsolvers_la-vector.lo
+/libsolvers_la-vector.o
