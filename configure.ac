@@ -50,6 +50,7 @@ AC_C_CONST
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
+AC_FUNC_MALLOC
 
 # GSL library checks
 AC_CHECK_LIB([m],[cos])

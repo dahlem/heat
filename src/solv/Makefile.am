@@ -13,8 +13,8 @@ noinst_LTLIBRARIES = libsolvers.la
 libsolvers_la_SOURCES =                                               \
 	cds_matrix.c                                                  \
 	vector.c                                                      \
-	mult.c
-#	conjugate.c
+	mult.c                                                        \
+	conjugate.c
 
 libsolvers_la_CPPFLAGS = -I./includes
 

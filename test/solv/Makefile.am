@@ -16,6 +16,7 @@ check_PROGRAMS = $(TESTS)
 
 solv_test_SOURCES =                                                  \
 	solv_suite.c                                                 \
+	vector_test.c                                                \
 	mult_test.c
 
 

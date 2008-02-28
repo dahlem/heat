@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>                */
+/* Copyright (C) 2008 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>                */
 /*                                                                             */
 /* This file is free software; as a special exception the author gives         */
 /* unlimited permission to copy and/or distribute it, with or without          */
@@ -8,36 +8,32 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/**
+/** @file conjugate.h
  * Declaration of the methods for the Conjugate gradient algorithm.
  *
- * @author Dominik Dahlem (ID: 02175321)
+ * @author Dominik Dahlem
  */
 #ifndef __CONJUGATE_H__
 #define __CONJUGATE_H__
 
 
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-
+#include "cds_matrix.h"
 #include "error.h"
 
 
-/**
+/** @fn conjugate(cdsgb_matrix *A, vector *b, vector *x, vector **x_bar)
+ *
  * This method solves the linear system with the Conjugate Gradient method.
- * The vectors x_bar and x_error are allocated within this method and therefore
+ * The vector x_bar are allocated within this method and therefore
  * need to be de-allocated by the client application.
  *
- * @param gsl_matrix* the matrix A
- * @param gsl_vector* the vector b
- * @param gsl_vector* the vector x
- * @param gsl_vector** the solution vector x_bar
- * @param gsl_vector** the error vector x_error
- * @param double* the maximum error within the solution vector
+ * @param cdsgb_matrix* the matrix A
+ * @param vector* the vector b
+ * @param vector* the vector x
+ * @param vector** the solution vector x_bar
  * @return 0, if success. Otherwise the error code.
  */
-int conjugate(gsl_matrix *A, gsl_vector *b, gsl_vector *x,
-              gsl_vector **x_bar, gsl_vector **x_error, double *max_error);
+int conjugate(cdsgb_matrix *A, vector *b, vector *x, vector **x_bar);
 
 
 

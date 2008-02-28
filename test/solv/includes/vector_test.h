@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>                */
+/* Copyright (C) 2008 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>                */
 /*                                                                             */
 /* This file is free software; as a special exception the author gives         */
 /* unlimited permission to copy and/or distribute it, with or without          */
@@ -7,27 +7,35 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include <stdio.h>
-#include <CUnit/Basic.h>
 
-#include "mult_test.h"
-#include "vector_test.h"
+#ifndef __VECTOR_TEST_H__
+#define __VECTOR_TEST_H__
 
 
-int main()
-{
-    /* initialize the CUnit test registry */
-    if (CUE_SUCCESS != CU_initialize_registry()) {
-        return CU_get_error();
-    }
+#include <CUnit/CUnit.h>
 
-    registerMultTests();
-    registerVectorTests();
-    
-    /* Run all tests using the CUnit Basic interface */
-    CU_basic_set_mode(CU_BRM_VERBOSE);
-    CU_basic_run_tests();
-    CU_cleanup_registry();
-   
-    return CU_get_error();
-}
+
+void registerVectorTests();
+
+
+
+void testDotProduct();
+void testDaxpy();
+void testDnrm2();
+void testAdd();
+
+
+static CU_TestInfo test_vector[] = {
+    { "testDotProduct", testDotProduct },
+    { "testDaxpy", testDaxpy },
+    { "testDnrm2", testDnrm2 },
+    { "testAdd", testAdd },
+    CU_TEST_INFO_NULL,
+};
+
+static CU_SuiteInfo vector_suites[] = {
+    { "TestVector", NULL, NULL, test_vector },
+    CU_SUITE_INFO_NULL,
+};
+
+#endif

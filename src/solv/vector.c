@@ -7,6 +7,10 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include <assert.h>
+#include <math.h>
+
+#include "error.h"
 #include "vector.h"
 
 
@@ -19,3 +23,55 @@ void zero(const vector *vec)
     }
 }
 
+double dotProduct(const vector *const a, const vector *const b)
+{
+    int i;
+    double result;
+
+    /* check the assumption that both vectors have the same size */
+    assert(a->len == b->len);
+
+    result == 0.0;
+    
+    for (i = 0; i < a->len; ++i) {
+        result += a->data[i] * b->data[i];
+    }
+
+    return result;
+}
+
+void daxpy(double alpha, const vector *const x, const vector *y)
+{
+    int i;
+
+    for (i = 0; i < x->len; ++i) {
+        y->data[i] = alpha * x->data[i];
+    }
+}
+
+double dnrm2(const vector *const x)
+{
+    int i;
+    double result;
+
+    result = 0.0;
+    
+    for (i = 0; i < x->len; ++i) {
+        result += (x->data[i] * x->data[i]);
+    }
+
+    return sqrt(result);
+}
+
+int add(const vector *x, const vector *const y)
+{
+    int i;
+
+    if (x->len != y->len) {
+        return VECTOR_DIMENSION_MISMATCH;
+    }
+    
+    for (i = 0; i < x->len; ++i) {
+        x->data[i] += y->data[i];
+    }
+}

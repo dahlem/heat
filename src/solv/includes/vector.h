@@ -19,12 +19,49 @@
 #include "cds_matrix.h"
 
 
-/** @fnvoid zero(const vector *vec)
+/** @fn void zero(const vector *vec)
  * Zero each element of the given vector.
  *
  * @param vector* the vector to be set to (0, 0, ..., 0).
  */
 void zero(const vector *vec);
+
+/** @fn double dotProduct(const vector *const a, const vector *const b)
+ * This function calculates the dot product of two given vectors.
+ *
+ * @param const vector *const the left vector
+ * @param const vector *const the right vector
+ * @return the dot product result
+ */
+double dotProduct(const vector *const a, const vector *const b);
+
+/** @fn void daxpy(double alpha, const vector *const x, const vector *y)
+ * Calculate \$ y = \alpha * x \$.
+ *
+ * @param double the scale parameter
+ * @param const vector *const the vector to be scaled
+ * @param const vector* the vector which holds the result
+ */
+void daxpy(double alpha, const vector *const x, const vector *y);
+
+/** @fn double dnrm2(const vector *const x)
+ * This function calculates the euclidean norm \$ ||x||_2 = \sqrt {\sum x_i^2} \$.
+ *
+ * @param const vector *const the vector to calculate the norm of
+ * @return the euclidean norm of the vector x
+ */
+double dnrm2(const vector *const x);
+
+/** @fn void add(const vector *x, const vector *const y)
+ * This function adds the elements of vector x to the elements of vector y,
+ * \$ x'_i = x_i + y_i \$. The two vectors must have the same length.
+ *
+ * @param const vector* the left vector containing the result
+ * @param const vector *const the right vector to be added to the left one.
+ * @return 0, if success. Otherwise the error code.
+ */
+int add(const vector *x, const vector *const y);
+
 
 
 #endif
