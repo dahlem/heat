@@ -1,6 +1,10 @@
 /libsolvers.la
 /libsolvers_la-cds_matrix.lo
 /libsolvers_la-cds_matrix.o
+/libsolvers_la-conjugate.lo
+/libsolvers_la-conjugate.o
+/libsolvers_la-matrix.lo
+/libsolvers_la-matrix.o
 /libsolvers_la-mult.lo
 /libsolvers_la-mult.o
 /libsolvers_la-vector.lo

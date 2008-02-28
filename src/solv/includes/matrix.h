@@ -8,15 +8,18 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file cds_matrix.h
+/** @file matrix.h
  * This header file declares the vector and matrix structure including their
  * allocation and clean-up procedures.
  *
  * @author Dominik Dahlem
  */
 
-#ifndef __CDS_MATRIX_H
-#define __CDS_MATRIX_H
+#ifndef __MATRIX_H
+#define __MATRIX_H
+
+
+#include "vector.h"
 
 /** @enum matrix_type
  * This enumeration identifies the supported matrix types.
@@ -26,32 +29,20 @@ enum matrix_type {
     GB  /** Generic Banded matrix type */
 };  
 
-/** @typedef vector
- * A vector structure to represent double vectors.
+/** @enum matrix_storage
+ * This enumeration identifies the supported matrix storage formats.
  */
-typedef struct
-{
-    int len; /** the length of the vector */
-    double *data; /** the data array of doubles */
-} vector;
+enum matrix_storage {
+    CDS  /** Compressed Diagonal Storage format */
+};  
 
-/** @typedef cds_matrix
- * This structure represents a symmetric banded matrix structure in
- * compressed diagonal storage. Only the main diagonal and the upper diagonals
- * are stored in exactly the order they appear in the matrix.
- */
-typedef struct 
-{
-    int len; /** the number of diagonals */
-    vector *diags; /** the data array of vectors for each diagonal */
-} cds_matrix;
-
-/** @typedef cdsgb_matrix
- * This structure represents a generic banded matrix structure in
- * compressed diagonal storage. In contrast to the symmetric case, this storage
+/** @typedef matrix
+ * This structure represents a matrix which can be represented as a generic banded
+ * and symmetric banded matrix. The matrix storage format supported is the
+ * compressed diagonal storage. In contrast to the symmetric case, the generic storage
  * format requires leading zeros for lower diagonals and trailing zeros for upper
  * diagonals. As a consequence all diagonals have the same size. Additionally,
- * this storage format requires the specification of the relative offsets of each
+ * the CDS storage format requires the specification of the relative offsets of each
  * diagonal to the main diagonal, where the main diagonal is 0.
  */
 typedef struct 
@@ -59,32 +50,10 @@ typedef struct
     int len; /** the number of diagonals*/
     int *index; /** the data array of indeces relative to the main diagonal */
     vector *diags; /** the data array of vectors for each diagonal */
-} cdsgb_matrix;
+    enum matrix_type mtype; /** the matrix type */
+    enum matrix_storage storage; /** the storage format */
+} matrix;
 
-
-
-/** @fn void vector_alloc(vector *vec, int len)
- * Allocate memory for the vector structure
- *
- * @param vector* the vector to be allocated
- * @param int the length of the vector
- */
-void vector_alloc(vector *vec, int len);
-
-/** @fn void vector_calloc(vector *vec, int len)
- * Allocate memory for the vector structure and initialise the vector elements to zero.
- *
- * @param vector* the vector to be allocated
- * @param int the length of the vector
- */
-void vector_calloc(vector *vec, int len);
-
-/** @fn void vector_free(vector *vec)
- * Free the vector structure
- *
- * @param vector* the vector to be free'd
- */
-void vector_free(vector *vec);
 
 /** @fn void cds_matrix_alloc(cds_matrix *mat, int len, int *elem)
  * Allocate memory for the symmetric banded matrix in CDS format given
@@ -95,14 +64,14 @@ void vector_free(vector *vec);
  * @param int the number of diagonals
  * @param int* the number of elements for each diagonal
  */
-void cds_matrix_alloc(cds_matrix *mat, int len, int *elem);
+void cds_matrix_alloc(matrix *mat, int len, int *elem);
 
 /** @fn void cds_matrix_free(cds_matrix *mat)
  * Free the matrix structure in CDS format.
  *
  * @param cds_matrix* the matrix structure to be free'd
  */
-void cds_matrix_free(cds_matrix *mat);
+void cds_matrix_free(matrix *mat);
 
 /** @fn void cdsgb_matrix_alloc(cdsgb_matrix *mat, int len, int *elem, int *index)
  * Allocate memory for a generic banded matrix structure in CDS format given
@@ -114,14 +83,28 @@ void cds_matrix_free(cds_matrix *mat);
  * @param int* the number of elements for each diagonal
  * @param int* the relative offsets to teh main diagonal
  */
-void cdsgb_matrix_alloc(cdsgb_matrix *mat, int len, int *elem, int *index);
+void cdsgb_matrix_alloc(matrix *mat, int len, int *elem, int *index);
 
 /** @fn void cdsgb_matrix_free(cdsgb_matrix *mat)
  * Free the generic banded matrix structure.
  *
  * @param cdsgb_matrix* the matrix structure to be free'd
  */
-void cdsgb_matrix_free(cdsgb_matrix *mat);
+void cdsgb_matrix_free(matrix *mat);
+
+/** @fn void matrix_alloc(matrix *mat)
+ * Function to allocate the matrix. The matrix characteristics of the matrix are required
+ * and have to be set within the structure before passing the matrix into this method.
+ *
+ * @param matrix* the matrix to be allocated
+ */
+void matrix_alloc(matrix *mat, int *elem, int *index);
+
+/** @void matrix_free(matrix *mat)
+ * Free the allocated memory for the matrix.
+ */
+void matrix_free(matrix *mat);
+
 
 
 #endif

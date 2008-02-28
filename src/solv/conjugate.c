@@ -9,7 +9,7 @@
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 #include <string.h>
 
-#include "cds_matrix.h"
+#include "matrix.h"
 #include "conjugate.h"
 #include "error.h"
 #include "mult.h"
@@ -17,7 +17,7 @@
 
 
 
-int conjugate(cdsgb_matrix *A, vector *b, vector *x, vector **x_bar)
+int conjugate(matrix *A, vector *b, vector *x, vector **x_bar)
 {
     vector *r, *p, *temp;
     size_t k;
@@ -36,7 +36,7 @@ int conjugate(cdsgb_matrix *A, vector *b, vector *x, vector **x_bar)
 
     memcpy((*x_bar)->data, x->data, x->len * sizeof(double));
     memcpy(p->data, b->data, b->len * sizeof(double));
-    dcdsgbmv(A, x, b);
+    dgbmv(A, x, b);
     memcpy(r->data, p->data, p->len * sizeof(double));
     
     alpha = beta = 0.0;
@@ -45,7 +45,7 @@ int conjugate(cdsgb_matrix *A, vector *b, vector *x, vector **x_bar)
     dp = norm * norm;
 
     while ((k <= A->len) || (dp > 1e-12)) {
-        dcdsgbmv(A, p, temp);
+        dgbmv(A, p, temp);
 
         dotprod = dotProduct(p, temp);
         alpha = dp / dotprod;

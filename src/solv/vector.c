@@ -9,10 +9,28 @@
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 #include <assert.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "error.h"
 #include "vector.h"
 
+
+void vector_alloc(vector *vec, int len)
+{
+    vec->len = len;
+    vec->data = malloc(sizeof(double) * len);
+}
+
+void vector_calloc(vector *vec, int len)
+{
+    vec->len = len;
+    vec->data = calloc(len, sizeof(double));
+}
+
+void vector_free(vector *vec)
+{
+    free(vec->data);
+}
 
 void zero(const vector *vec)
 {
@@ -31,7 +49,7 @@ double dotProduct(const vector *const a, const vector *const b)
     /* check the assumption that both vectors have the same size */
     assert(a->len == b->len);
 
-    result == 0.0;
+    result = 0.0;
     
     for (i = 0; i < a->len; ++i) {
         result += a->data[i] * b->data[i];
@@ -74,4 +92,6 @@ int add(const vector *x, const vector *const y)
     for (i = 0; i < x->len; ++i) {
         x->data[i] += y->data[i];
     }
+
+    return EXIT_SUCCESS;
 }

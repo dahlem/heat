@@ -15,8 +15,9 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 
-#include "cds_matrix.h"
+#include "matrix.h"
 #include "mult.h"
+#include "vector.h"
 
 #include "mult_test.h"
 
@@ -34,7 +35,7 @@ void testMultiplicationSymmetricBanded()
     int i, j;
     gsl_matrix *A_gsl;
     gsl_vector *u_gsl, *temp;
-    cds_matrix A;
+    matrix A;
     vector u, v;
     int elems[3];
 
@@ -71,8 +72,12 @@ void testMultiplicationSymmetricBanded()
     elems[0] = 9;
     elems[1] = 8;
     elems[2] = 6;
+
+    A.mtype = SB;
+    A.storage = CDS;
+    A.len = 3;
     
-    cds_matrix_alloc(&A, 3, elems);
+    matrix_alloc(&A, elems, NULL);
     
     /* assign values */
     for (i = 0; i < A.diags[0].len; ++i) {
@@ -103,7 +108,7 @@ void testMultiplicationSymmetricBanded()
     
     vector_free(&u);
     vector_free(&v);
-    cds_matrix_free(&A);
+    matrix_free(&A);
     
     gsl_vector_free(temp);
     gsl_vector_free(u_gsl);
@@ -115,7 +120,7 @@ void testMultiplicationGenericBanded1()
     int i, j;
     gsl_matrix *A_gsl;
     gsl_vector *u_gsl, *temp;
-    cdsgb_matrix A;
+    matrix A;
     vector u, v;
     int elems[5];
     int index[5];
@@ -167,7 +172,10 @@ void testMultiplicationGenericBanded1()
     index[3] = 1;
     index[4] = 3;
 
-    cdsgb_matrix_alloc(&A, 5, elems, index);
+    A.mtype = GB;
+    A.storage = CDS;
+    A.len = 5;
+    matrix_alloc(&A, elems, index);
     
     /* assign values */
     for (i = 1; i < A.diags[0].len; ++i) {
@@ -205,7 +213,7 @@ void testMultiplicationGenericBanded1()
     
     vector_free(&u);
     vector_free(&v);
-    cdsgb_matrix_free(&A);
+    matrix_free(&A);
     
     gsl_vector_free(temp);
     gsl_vector_free(u_gsl);
@@ -217,7 +225,7 @@ void testMultiplicationGenericBanded2()
     int i, j;
     gsl_matrix *A_gsl;
     gsl_vector *u_gsl, *temp;
-    cdsgb_matrix A;
+    matrix A;
     vector u, v;
     int elems[5];
     int index[5];
@@ -274,7 +282,10 @@ void testMultiplicationGenericBanded2()
     index[3] = 4;
     index[4] = 6;
 
-    cdsgb_matrix_alloc(&A, 5, elems, index);
+    A.mtype = GB;
+    A.storage = CDS;
+    A.len = 5;
+    matrix_alloc(&A, elems, index);
     
     /* assign values */
     for (i = 1; i < A.diags[0].len; ++i) {
@@ -311,7 +322,7 @@ void testMultiplicationGenericBanded2()
     
     vector_free(&u);
     vector_free(&v);
-    cdsgb_matrix_free(&A);
+    matrix_free(&A);
     
     gsl_vector_free(temp);
     gsl_vector_free(u_gsl);
@@ -323,7 +334,7 @@ void testMultiplicationGenericBanded3()
     int i, j;
     gsl_matrix *A_gsl;
     gsl_vector *u_gsl, *temp;
-    cdsgb_matrix A;
+    matrix A;
     vector u, v;
     int elems[5];
     int index[5];
@@ -375,7 +386,10 @@ void testMultiplicationGenericBanded3()
     index[3] = 7;
     index[4] = 9;
 
-    cdsgb_matrix_alloc(&A, 5, elems, index);
+    A.mtype = GB;
+    A.storage = CDS;
+    A.len = 5;
+    matrix_alloc(&A, elems, index);
     
     /* assign values */
     for (i = 1; i < A.diags[0].len; ++i) {
@@ -413,7 +427,7 @@ void testMultiplicationGenericBanded3()
     
     vector_free(&u);
     vector_free(&v);
-    cdsgb_matrix_free(&A);
+    matrix_free(&A);
     
     gsl_vector_free(temp);
     gsl_vector_free(u_gsl);

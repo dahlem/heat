@@ -22,10 +22,10 @@
 #ifndef __MULT_H
 #define __MULT_H
 
-#include "cds_matrix.h"
+#include "matrix.h"
 
 
-/** @fn void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *v)
+/** @fn void dcdssbmv(const matrix *const mat, const vector *const u, const vector *v)
  *
  * This operation performs the matrix-vector multiply using a matrix in compressed
  * diagonal storage format. The multiplication algorithm assumes a
@@ -33,13 +33,13 @@
  * of diagonals. The offsets of each diagonal are calculated as the difference of the
  * current diagonal and the main diagonal.
  *
- * @param const cds_matrix *const the matrix in CDS format
+ * @param const matrix *const the matrix in CDS format
  * @param const vector *const the u vector
  * @param const vector* the result vector
  */
-void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *v);
+void dcdssbmv(const matrix *const mat, const vector *const u, const vector *v);
 
-/** @fn void dcdsgbmv(const cdsgb_matrix *const mat, const vector *const u, const vector *v)
+/** @fn void dcdsgbmv(const matrix *const mat, const vector *const u, const vector *v)
  *
  * This operation performs the matrix-vector multiply using a matrix in compressed
  * diagonal storage format. The multiplication algorithm assumes a
@@ -51,11 +51,21 @@ void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *
  * are positive. The algorithm is described on NetLib
  * http://www.netlib.org/linalg/html_templates/node99.html.
  *
- * @param const cdsgb_matrix *const the matrix in CDS format
+ * @param const matrix *const the matrix in CDS format
  * @param const vector *const the u vector
  * @param const vector* the result vector
  */
-void dcdsgbmv(const cdsgb_matrix *const mat, const vector *const u, const vector *v);
+void dcdsgbmv(const matrix *const mat, const vector *const u, const vector *v);
+
+/** @fn void dgbmv(const matrix *const mat, const vector *const u, const vector *v)
+ * This operation performs the matrix-vector multiply. It delegates the function call
+ * to the respective specialised operation depending on the given matrix type.
+ *
+ * @param const matrix *const the matrix in CDS format
+ * @param const vector *const the u vector
+ * @param const vector* the result vector
+ */
+void dgbmv(const matrix *const mat, const vector *const u, const vector *v);
 
 
 

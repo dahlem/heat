@@ -14,7 +14,7 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
 
-#include "cds_matrix.h"
+#include "matrix.h"
 #include "vector.h"
 
 #include "vector_test.h"

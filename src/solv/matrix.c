@@ -9,28 +9,12 @@
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 #include <stdlib.h>
 
-#include "cds_matrix.h"
+#include "vector.h"
+#include "matrix.h"
 
 
 
-void vector_alloc(vector *vec, int len)
-{
-    vec->len = len;
-    vec->data = malloc(sizeof(double) * len);
-}
-
-void vector_calloc(vector *vec, int len)
-{
-    vec->len = len;
-    vec->data = calloc(len, sizeof(double));
-}
-
-void vector_free(vector *vec)
-{
-    free(vec->data);
-}
-
-void cds_matrix_alloc(cds_matrix *mat, int len, int *elem)
+void cds_matrix_alloc(matrix *mat, int len, int *elem)
 {
     int i;
     
@@ -43,7 +27,7 @@ void cds_matrix_alloc(cds_matrix *mat, int len, int *elem)
     }
 }
 
-void cds_matrix_free(cds_matrix *mat)
+void cds_matrix_free(matrix *mat)
 {
     int i;
 
@@ -54,7 +38,7 @@ void cds_matrix_free(cds_matrix *mat)
     free(mat->diags);
 }
 
-void cdsgb_matrix_alloc(cdsgb_matrix *mat, int len, int *elem, int *index)
+void cdsgb_matrix_alloc(matrix *mat, int len, int *elem, int *index)
 {
     int i;
     
@@ -69,7 +53,7 @@ void cdsgb_matrix_alloc(cdsgb_matrix *mat, int len, int *elem, int *index)
     }
 }
 
-void cdsgb_matrix_free(cdsgb_matrix *mat)
+void cdsgb_matrix_free(matrix *mat)
 {
     int i;
 
@@ -79,4 +63,22 @@ void cdsgb_matrix_free(cdsgb_matrix *mat)
 
     free(mat->diags);
     free(mat->index);
+}
+
+void matrix_alloc(matrix *mat, int *elem, int *index)
+{
+    if (mat->mtype == SB) {
+        cds_matrix_alloc(mat, mat->len, elem);
+    } else if (mat->mtype == GB) {
+        cdsgb_matrix_alloc(mat, mat->len, elem, index);
+    }
+}
+
+void matrix_free(matrix *mat)
+{
+    if (mat->mtype == SB) {
+        cds_matrix_free(mat);
+    } else if (mat->mtype == GB) {
+        cdsgb_matrix_free(mat);
+    }
 }

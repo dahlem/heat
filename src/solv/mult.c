@@ -9,12 +9,13 @@
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 #include <gsl/gsl_math.h>
 
+#include "matrix.h"
 #include "mult.h"
 #include "vector.h"
 
 
 
-void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *v)
+void dcdssbmv(const matrix *const mat, const vector *const u, const vector *v)
 {
     int i, j;
     int p;
@@ -40,7 +41,7 @@ void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *
     }
 }
 
-void dcdsgbmv(const cdsgb_matrix *const mat, const vector *const u, const vector *v)
+void dcdsgbmv(const matrix *const mat, const vector *const u, const vector *v)
 {
     int i, j;
     
@@ -54,5 +55,14 @@ void dcdsgbmv(const cdsgb_matrix *const mat, const vector *const u, const vector
                 mat->diags[i].data[j]
                 * u->data[j + mat->index[i]];
         }
+    }
+}
+
+void dgbmv(const matrix *const mat, const vector *const u, const vector *v)
+{
+    if (mat->mtype == SB) {
+        dcdssbmv(mat, u, v);
+    } else if (mat->mtype == GB) {
+        dcdsgbmv(mat, u, v);
     }
 }

@@ -17,23 +17,24 @@
 #define __CONJUGATE_H__
 
 
-#include "cds_matrix.h"
 #include "error.h"
+#include "matrix.h"
+#include "vector.h"
 
 
-/** @fn conjugate(cdsgb_matrix *A, vector *b, vector *x, vector **x_bar)
+/** @fn conjugate(matrix *A, vector *b, vector *x, vector **x_bar)
  *
  * This method solves the linear system with the Conjugate Gradient method.
  * The vector x_bar are allocated within this method and therefore
  * need to be de-allocated by the client application.
  *
- * @param cdsgb_matrix* the matrix A
+ * @param matrix* the matrix A
  * @param vector* the vector b
  * @param vector* the vector x
  * @param vector** the solution vector x_bar
  * @return 0, if success. Otherwise the error code.
  */
-int conjugate(cdsgb_matrix *A, vector *b, vector *x, vector **x_bar);
+int conjugate(matrix *A, vector *b, vector *x, vector **x_bar);
 
 
 

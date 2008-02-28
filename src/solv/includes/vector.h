@@ -16,8 +16,39 @@
 #ifndef __VECTOR_H
 #define __VECTOR_H
 
-#include "cds_matrix.h"
 
+/** @typedef vector
+ * A vector structure to represent double vectors.
+ */
+typedef struct
+{
+    int len; /** the length of the vector */
+    double *data; /** the data array of doubles */
+} vector;
+
+
+/** @fn void vector_alloc(vector *vec, int len)
+ * Allocate memory for the vector structure
+ *
+ * @param vector* the vector to be allocated
+ * @param int the length of the vector
+ */
+void vector_alloc(vector *vec, int len);
+
+/** @fn void vector_calloc(vector *vec, int len)
+ * Allocate memory for the vector structure and initialise the vector elements to zero.
+ *
+ * @param vector* the vector to be allocated
+ * @param int the length of the vector
+ */
+void vector_calloc(vector *vec, int len);
+
+/** @fn void vector_free(vector *vec)
+ * Free the vector structure
+ *
+ * @param vector* the vector to be free'd
+ */
+void vector_free(vector *vec);
 
 /** @fn void zero(const vector *vec)
  * Zero each element of the given vector.
