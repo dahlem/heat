@@ -18,6 +18,13 @@
 #ifndef __CDS_MATRIX_H
 #define __CDS_MATRIX_H
 
+/** @enum matrix_type
+ * This enumeration identifies the supported matrix types.
+ */
+enum matrix_type {
+    SB, /** Symmetric Banded matrix type */
+    GB  /** Generic Banded matrix type */
+};  
 
 /** @typedef vector
  * A vector structure to represent double vectors.
@@ -63,6 +70,14 @@ typedef struct
  * @param int the length of the vector
  */
 void vector_alloc(vector *vec, int len);
+
+/** @fn void vector_calloc(vector *vec, int len)
+ * Allocate memory for the vector structure and initialise the vector elements to zero.
+ *
+ * @param vector* the vector to be allocated
+ * @param int the length of the vector
+ */
+void vector_calloc(vector *vec, int len);
 
 /** @fn void vector_free(vector *vec)
  * Free the vector structure

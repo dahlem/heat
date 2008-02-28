@@ -19,6 +19,12 @@ void vector_alloc(vector *vec, int len)
     vec->data = malloc(sizeof(double) * len);
 }
 
+void vector_calloc(vector *vec, int len)
+{
+    vec->len = len;
+    vec->data = calloc(len, sizeof(double));
+}
+
 void vector_free(vector *vec)
 {
     free(vec->data);
