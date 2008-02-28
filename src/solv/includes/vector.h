@@ -67,7 +67,7 @@ void zero(const vector *vec);
 double dotProduct(const vector *const a, const vector *const b);
 
 /** @fn void daxpy(double alpha, const vector *const x, const vector *y)
- * Calculate \$ y = \alpha * x \$.
+ * Calculate \f$ y = \alpha * x \f$.
  *
  * @param double the scale parameter
  * @param const vector *const the vector to be scaled
@@ -76,7 +76,7 @@ double dotProduct(const vector *const a, const vector *const b);
 void daxpy(double alpha, const vector *const x, const vector *y);
 
 /** @fn double dnrm2(const vector *const x)
- * This function calculates the euclidean norm \$ ||x||_2 = \sqrt {\sum x_i^2} \$.
+ * This function calculates the euclidean norm \f$ ||x||_2 = \sqrt {\sum x_i^2} \f$.
  *
  * @param const vector *const the vector to calculate the norm of
  * @return the euclidean norm of the vector x
@@ -85,7 +85,7 @@ double dnrm2(const vector *const x);
 
 /** @fn void add(const vector *x, const vector *const y)
  * This function adds the elements of vector x to the elements of vector y,
- * \$ x'_i = x_i + y_i \$. The two vectors must have the same length.
+ * \f$ x'_i = x_i + y_i \f$. The two vectors must have the same length.
  *
  * @param const vector* the left vector containing the result
  * @param const vector *const the right vector to be added to the left one.

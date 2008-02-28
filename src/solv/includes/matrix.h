@@ -9,7 +9,7 @@
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
 /** @file matrix.h
- * This header file declares the vector and matrix structure including their
+ * This header file declares the matrix structure including its
  * allocation and clean-up procedures.
  *
  * @author Dominik Dahlem
@@ -55,40 +55,40 @@ typedef struct
 } matrix;
 
 
-/** @fn void cds_matrix_alloc(cds_matrix *mat, int len, int *elem)
+/** @fn void cds_matrix_alloc(matrix *mat, int len, int *elem)
  * Allocate memory for the symmetric banded matrix in CDS format given
  * the number of diagonals and the number of elements within each
  * diagonal.
  *
- * @param cds_matrix* the matrix to be allocated
+ * @param matrix* the matrix to be allocated
  * @param int the number of diagonals
  * @param int* the number of elements for each diagonal
  */
 void cds_matrix_alloc(matrix *mat, int len, int *elem);
 
-/** @fn void cds_matrix_free(cds_matrix *mat)
+/** @fn void cds_matrix_free(matrix *mat)
  * Free the matrix structure in CDS format.
  *
- * @param cds_matrix* the matrix structure to be free'd
+ * @param matrix* the matrix structure to be free'd
  */
 void cds_matrix_free(matrix *mat);
 
-/** @fn void cdsgb_matrix_alloc(cdsgb_matrix *mat, int len, int *elem, int *index)
+/** @fn void cdsgb_matrix_alloc(matrix *mat, int len, int *elem, int *index)
  * Allocate memory for a generic banded matrix structure in CDS format given
  * the number of diagonals, their respective elements and their relative offset
  * to the main diagonal.
  *
- * @param cdsgb_matrix* the matrix structure to be allocated
+ * @param matrix* the matrix structure to be allocated
  * @param int the number of diagonals
  * @param int* the number of elements for each diagonal
  * @param int* the relative offsets to teh main diagonal
  */
 void cdsgb_matrix_alloc(matrix *mat, int len, int *elem, int *index);
 
-/** @fn void cdsgb_matrix_free(cdsgb_matrix *mat)
+/** @fn void cdsgb_matrix_free(matrix *mat)
  * Free the generic banded matrix structure.
  *
- * @param cdsgb_matrix* the matrix structure to be free'd
+ * @param matrix* the matrix structure to be free'd
  */
 void cdsgb_matrix_free(matrix *mat);
 
