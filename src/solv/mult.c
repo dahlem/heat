@@ -43,7 +43,6 @@ void dcdssbmv(const cds_matrix *const mat, const vector *const u, const vector *
 void dcdsgbmv(const cdsgb_matrix *const mat, const vector *const u, const vector *v)
 {
     int i, j;
-    int row, column;
     
     zero(v);
 
