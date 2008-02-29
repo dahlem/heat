@@ -23,9 +23,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
     vector r, p, temp;
     size_t k;
     double error, dotprod, alpha, beta, norm;
-    int i;
     
-
     if (b->len != A->diags[0].len) {
         return MATRIX_VECTOR_UNEQUAL_ROW_DIM;
     }
@@ -53,28 +51,39 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
     k = 1;
 
     /* calculate the error */
-    norm = dnrm2(&r);
-    error = norm * norm;
+    /* \f$ dp = (r, r) \f$ */
+    error = dotProduct(&r, &r);
 
     while ((k <= A->len) || (error > 1e-12)) {
+        /* \f$ v = A * p \f$ */
         dgbmv(A, &p, &temp);
 
+        /* \f$ \alpha = (r' * r)/(p' * v)  \f$ */
         dotprod = dotProduct(&p, &temp);
         alpha = error / dotprod;
+        
+        /* \f$ x = x + \alpha * p   \f$ */
         daxpy(alpha, &p, x_bar);
+
+        /* \f$ new_r = r - \alpha * v  \f$ */
         daxpy(-alpha, &temp, &r);
 
+        /* \f$ \beta = (new_r' * new_r)/(r' * r) \f$ */
         norm = dnrm2(&r);
         beta = (norm * norm) / error;
+        
+        /* \f$ p = new_r + \beta * p  \f$ */
         memcpy(temp.data, p.data, p.len * sizeof(double));
         scale(beta, &temp);
         add(&temp, &r);
         memcpy(p.data, temp.data, temp.len * sizeof(double));
-        norm = dnrm2(&r);
-        error = norm * norm;
+
+        /* \f$ dp = (r, r) \f$ */
+        error = dotProduct(&r, &r);
         k++;
     }
 
+    /* clean-up allocated memory */
     vector_free(&temp);
     vector_free(&p);
     vector_free(&r);
