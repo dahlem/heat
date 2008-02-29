@@ -158,3 +158,26 @@ void testAdd()
     gsl_vector_free(gsl_a);
     gsl_vector_free(gsl_b);
 }
+
+void testScale()
+{
+    vector a;
+    int i;
+
+    vector_calloc(&a, 3);
+
+    for (i = 0; i < 3; ++i) {
+        a.data[i] = i;
+    }
+
+    scale(-3.0, &a);
+
+    for (i = 0; i < 3; ++i) {
+        CU_ASSERT_DOUBLE_EQUAL(
+            a.data[i],
+            -3.0 * i,
+            0.01);
+    }
+
+    vector_free(&a);
+}

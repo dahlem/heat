@@ -23,6 +23,7 @@ void testDotProduct();
 void testDaxpy();
 void testDnrm2();
 void testAdd();
+void testScale();
 
 
 static CU_TestInfo test_vector[] = {
@@ -30,6 +31,7 @@ static CU_TestInfo test_vector[] = {
     { "testDaxpy", testDaxpy },
     { "testDnrm2", testDnrm2 },
     { "testAdd", testAdd },
+    { "testScale", testScale },
     CU_TEST_INFO_NULL,
 };
 

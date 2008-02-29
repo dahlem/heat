@@ -7,9 +7,9 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include <stdio.h>
 #include <CUnit/Basic.h>
 
+#include "conjugate_test.h"
 #include "mult_test.h"
 #include "vector_test.h"
 
@@ -23,6 +23,7 @@ int main()
 
     registerMultTests();
     registerVectorTests();
+    registerConjugateTests();
     
     /* Run all tests using the CUnit Basic interface */
     CU_basic_set_mode(CU_BRM_VERBOSE);

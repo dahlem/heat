@@ -67,7 +67,7 @@ void zero(const vector *vec);
 double dotProduct(const vector *const a, const vector *const b);
 
 /** @fn void daxpy(double alpha, const vector *const x, const vector *y)
- * Calculate \f$ y = \alpha * x \f$.
+ * Calculate \f$ y = \alpha * x + y\f$.
  *
  * @param double the scale parameter
  * @param const vector *const the vector to be scaled
@@ -92,6 +92,14 @@ double dnrm2(const vector *const x);
  * @return 0, if success. Otherwise the error code.
  */
 int add(const vector *x, const vector *const y);
+
+/** @fn void scale(double alpha, const vector *x)
+ * This function scales a vector given a constant.
+ *
+ * @param double the scaling factor
+ * @param const vector * the vector to be scaled
+ */
+void scale(double alpha, const vector *x);
 
 
 

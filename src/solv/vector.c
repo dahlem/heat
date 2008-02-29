@@ -63,7 +63,7 @@ void daxpy(double alpha, const vector *const x, const vector *y)
     int i;
 
     for (i = 0; i < x->len; ++i) {
-        y->data[i] = alpha * x->data[i];
+        y->data[i] = alpha * x->data[i] + y->data[i];
     }
 }
 
@@ -94,4 +94,13 @@ int add(const vector *x, const vector *const y)
     }
 
     return EXIT_SUCCESS;
+}
+
+void scale(double alpha, const vector *x) 
+{
+    int i;
+
+    for (i = 0; i < x->len; ++i) {
+        x->data[i] *= alpha;
+    }
 }
