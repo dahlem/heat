@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([563 - Assignment 2],
-        [0.1],
+        [0.2],
         [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie], 
         [563_pde_conj_grad])
 
@@ -22,7 +22,6 @@ AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([foreign])
-
 
 # Checks for programs.
 AC_PROG_CXX
@@ -51,6 +50,7 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC
+AC_CHECK_FUNCS([sqrt])
 
 # GSL library checks
 AC_CHECK_LIB([m],[cos])
@@ -74,6 +74,33 @@ if test x$TESTING = xyes; then
 fi
 AM_CONDITIONAL(HAVE_CUNIT, test "x$HAVE_CUNIT" = xyes)
 
+# Check for MPI
+AC_ARG_ENABLE(mpi, AS_HELP_STRING(
+		   [--enable-mpi], 
+		   [enable MPI @<:@default=no@:>@]), 
+		   [USE_MPI=$enableval], [USE_MPI=no])
+if test "x$USE_MPI" = xyes; then
+   ACX_MPI([], [AC_MSG_WARN([cannot configure MPI (compile in serial)])])
+
+   if test "x$HAVE_CUNIT" = xyes; then
+	AC_MSG_WARN([CUnit is going to be disabled, if MPI is enabled.])
+        AM_CONDITIONAL(HAVE_CUNIT, false)
+   fi
+else
+   MPICC="${CC}"
+   AC_SUBST(MPICC)
+fi
+AM_CONDITIONAL(COMPILE_PARALLEL, test "x$USE_MPI" = xyes)
+
+# Check for debug
+AC_ARG_ENABLE(debug, AS_HELP_STRING(
+		     [--enable-debug], 
+		     [enable debug @<:@default=no@:>@]), 
+		     [DEBUGGING=$enableval], [DEBUGGING=no])
+if test "x$DEBUGGING" = xyes; then
+  AC_DEFINE(NDEBUG, 1, [define debugging, if enabled])
+fi
+
 
 # optional libraries
 AC_GCOV
@@ -95,6 +122,7 @@ AC_CONFIG_FILES([
    Makefile
    src/Makefile
    src/solv/Makefile
+   src/main/Makefile
    test/Makefile
    test/solv/Makefile
 ])

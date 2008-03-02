@@ -7,7 +7,16 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include <assert.h>
+#include "config.h"
+
+#ifdef NDEBUG
+# include <assert.h>
+#endif /* NDEBUG */
+
+#ifdef HAVE_MPI
+# include <mpi.h>
+#endif /* HAVE_MPI */
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -45,17 +54,30 @@ double dotProduct(const vector *const a, const vector *const b)
 {
     int i;
     double result;
+#ifdef HAVE_MPI
+    double global_result;
+#endif /* HAVE_MPI */
 
+
+#ifdef NDEBUG
     /* check the assumption that both vectors have the same size */
     assert(a->len == b->len);
-
+#endif /* NDEBUG */
+    
     result = 0.0;
     
     for (i = 0; i < a->len; ++i) {
         result += a->data[i] * b->data[i];
     }
 
+#ifdef HAVE_MPI
+    /* combine all local dotproducts */
+    MPI_Allreduce(&result, &global_result, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+    return global_result;
+#else
     return result;
+#endif /* HAVE_MPI */
 }
 
 void daxpy(double alpha, const vector *const x, const vector *y)

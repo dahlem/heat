@@ -8,18 +8,26 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-noinst_LTLIBRARIES = libsolvers.la
+bin_PROGRAMS = pdepoiss_solv
 
-libsolvers_la_SOURCES =                                               \
-	matrix.c                                                      \
-	vector.c                                                      \
-	mult.c                                                        \
-	conjugate.c
+if COMPILE_PARALLEL
+pdepoiss_solv_SOURCES =                                               \
+	main.c                                                        \
+	mpi-common.c                                                  \
+	cl.c
+else
+pdepoiss_solv_SOURCES =                                               \
+	main.c                                                        \
+	cl.c
+endif
 
-libsolvers_la_CPPFLAGS = -I./includes
+pdepoiss_solv_CPPFLAGS =                                              \
+	-I./includes                                                  \
+	-I$(top_srcdir)/src/solv/includes
+
 
 LDADD =                                                               \
-	$(GSL_LIBS)
+	$(top_srcdir)/src/solv/libsolvers.la
 
 
 include_HEADERS = includes

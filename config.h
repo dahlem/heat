@@ -26,6 +26,12 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
+/* Define if you have the MPI library. */
+#define HAVE_MPI 1
+
+/* Define to 1 if you have the `sqrt' function. */
+/* #undef HAVE_SQRT */
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
 
@@ -47,6 +53,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
+/* define debugging, if enabled */
+/* #undef NDEBUG */
+
 /* Name of package */
 #define PACKAGE "563_pde_conj_grad"
 
@@ -57,19 +66,19 @@
 #define PACKAGE_NAME "563 - Assignment 2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "563 - Assignment 2 0.1"
+#define PACKAGE_STRING "563 - Assignment 2 0.2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "563_pde_conj_grad"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.1"
+#define PACKAGE_VERSION "0.2"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.1"
+#define VERSION "0.2"
 
 /* os type */
 #define YOUR_OS "i686-pc-linux-gnu"
