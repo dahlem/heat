@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>
+# Copyright (C) 2008 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>
 #  
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without 
@@ -50,12 +50,21 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([sqrt])
+AC_CHECK_LIB([m],[sqrt])
 
 # GSL library checks
-AC_CHECK_LIB([m],[cos])
-AC_CHECK_LIB([gslcblas],[cblas_dgemm])
-AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+# enable gsl?
+AC_ARG_ENABLE(gsl, AS_HELP_STRING(
+		     [--enable-gsl], 
+		     [enable test @<:@default=no@:>@]), 
+		     [GSLLIB=$enableval], [GSLLIB=no])
+
+if test x$GSLLIB = xyes; then
+   AC_CHECK_LIB([m],[cos])
+   AC_CHECK_LIB([gslcblas],[cblas_dgemm])
+   AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+fi
+AM_CONDITIONAL(HAVE_GSL, test "x$GSLLIB" = xyes)
 
 
 # enable cunit?
@@ -70,6 +79,9 @@ if test x$TESTING = xyes; then
    
    if test x$HAVE_CUNIT != xyes; then
 	AC_MSG_WARN([CUnit not found. Tests cannot be run.])
+   fi
+   if test "x$GSLLIB" = xno; then
+	AC_MSG_ERROR([The CUnit tests require GSL to be configured.])
    fi
 fi
 AM_CONDITIONAL(HAVE_CUNIT, test "x$HAVE_CUNIT" = xyes)
@@ -121,10 +133,14 @@ DX_INIT_DOXYGEN([PDE-Solver], [Doxyfile], [doc/doxygen])
 AC_CONFIG_FILES([
    Makefile
    src/Makefile
+   src/common/Makefile
+   src/poiss/Makefile
+   src/poiss/2d/Makefile
    src/solv/Makefile
    src/main/Makefile
    test/Makefile
    test/solv/Makefile
+   test/common/Makefile
 ])
 
 

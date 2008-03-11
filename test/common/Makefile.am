@@ -11,25 +11,24 @@
 # Rules for the test code (use `make check` to execute)
 include $(top_srcdir)/mk/gcov.am
 
-TESTS = solv_test
+TESTS = common_test
 check_PROGRAMS = $(TESTS)
 
-solv_test_SOURCES =                                                  \
-	solv_suite.c                                                 \
-	conjugate_test.c
+common_test_SOURCES =                                                \
+	common_suite.c                                               \
+	vector_test.c                                                \
+	mult_test.c
 
 
-solv_test_CPPFLAGS =                                                 \
+common_test_CPPFLAGS =                                               \
 	-I./includes                                                 \
-	-I$(top_srcdir)/src/common/includes                          \
-	-I$(top_srcdir)/src/solv/includes
+	-I$(top_srcdir)/src/common/includes
 
 
 LDADD =                                                              \
 	-lcunit                                                      \
 	$(GSL_LIBS)                                                  \
-	$(top_srcdir)/src/common/libcommon.la                        \
-	$(top_srcdir)/src/solv/libsolvers.la
+	$(top_srcdir)/src/common/libcommon.la
 
 
 include_HEADERS = includes

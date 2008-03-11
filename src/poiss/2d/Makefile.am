@@ -8,19 +8,17 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-noinst_LTLIBRARIES = libsolvers.la
+noinst_LTLIBRARIES = libpoiss2d.la
 
-libsolvers_la_SOURCES =                                               \
-	conjugate.c
+libpoiss2d_la_SOURCES =                                               \
+	poiss_2d.c
 
-libsolvers_la_CPPFLAGS =                                              \
+libpoiss2d_la_CPPFLAGS =                                              \
 	-I./includes                                                  \
-	-I$(top_srcdir)/src/poiss/2d/includes                         \
 	-I$(top_srcdir)/src/common/includes
 
-libsolvers_la_LIBADD =                                                \
-	$(top_srcdir)/src/common/libcommon.la                         \
-	$(top_srcdir)/src/poiss/2d/libpoiss2d.la
+libpoiss2d_la_LIBADD =                                                \
+	$(top_srcdir)/src/common/libcommon.la
 
 
 include_HEADERS = includes

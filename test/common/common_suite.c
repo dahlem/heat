@@ -7,35 +7,26 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include <CUnit/Basic.h>
 
-/** @file mpi-common.h
- * Declaration of some structure and methods relevant for the parallel version of
- * the solver using MPI.
- *
- * @author Dominik Dahlem
- */
-#ifndef __MPI_COMMON_H__
-#define __MPI_COMMON_H__
+#include "mult_test.h"
+#include "vector_test.h"
 
 
-/** @struct globalMpiArgs_t
- * A structure to capture the global MPI arguments.
- */
-struct globalMpiArgs_t {
-    int rank; /* MPI rank of the current process */
-    int num_tasks; /* total number of MPI tasks */
-} mpiArgs;
+int main()
+{
+    /* initialize the CUnit test registry */
+    if (CUE_SUCCESS != CU_initialize_registry()) {
+        return CU_get_error();
+    }
 
-
-/** @fn void setup(int argc, char *argv[])
- * Display the help message for this application.
- */
-void setup(int argc, char *argv[]);
-
-/** @fn void finalise()
- * Initialise the global parameters.
- */
-void finalise();
-
-
-#endif
+    registerMultTests();
+    registerVectorTests();
+    
+    /* Run all tests using the CUnit Basic interface */
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+    CU_cleanup_registry();
+   
+    return CU_get_error();
+}

@@ -27,10 +27,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Define if you have the MPI library. */
-#define HAVE_MPI 1
-
-/* Define to 1 if you have the `sqrt' function. */
-/* #undef HAVE_SQRT */
+/* #undef HAVE_MPI */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -54,7 +51,7 @@
 #define HAVE_UNISTD_H 1
 
 /* define debugging, if enabled */
-/* #undef NDEBUG */
+#define NDEBUG 1
 
 /* Name of package */
 #define PACKAGE "563_pde_conj_grad"

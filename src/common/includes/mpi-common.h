@@ -8,32 +8,37 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file conjugate.h
- * Declaration of the methods for the Conjugate gradient algorithm.
+/** @file mpi-common.h
+ * Declaration of some structure and methods relevant for the parallel version of
+ * the solver using MPI.
  *
  * @author Dominik Dahlem
  */
-#ifndef __CONJUGATE_H__
-#define __CONJUGATE_H__
+#ifndef __MPI_COMMON_H__
+#define __MPI_COMMON_H__
 
 
-#include "error.h"
-#include "matrix.h"
-#include "vector.h"
-
-
-/** @fn conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
- *
- * This method solves the linear system with the Conjugate Gradient method.
- *
- * @param matrix* the matrix A
- * @param vector* the vector b
- * @param vector* the vector x
- * @param vector* the solution vector x_bar
- * @return 0, if success. Otherwise the error code.
+/** @struct globalMpiArgs_t
+ * A structure to capture the global MPI arguments.
  */
-int conjugate(matrix *A, vector *b, vector *x, vector *x_bar);
+struct globalMpiArgs_t {
+    int rank; /* MPI rank of the current process */
+    int num_tasks; /* total number of MPI tasks */
+} mpiArgs;
 
+
+/** @fn void setup(int *argc, char **argv[])
+ * Display the help message for this application.
+ *
+ * @param int* a pointer to the number of command-line arguments
+ * @param char*** a pointer to the command-line parameters
+ */
+void setup(int *argc, char **argv[]);
+
+/** @fn void finalise()
+ * Initialise the global parameters.
+ */
+void finalise();
 
 
 #endif

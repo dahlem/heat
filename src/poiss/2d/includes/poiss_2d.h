@@ -7,23 +7,21 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include "config.h"
 
-#ifdef HAVE_MPI
-# include <mpi.h>
-#endif /* HAVE_MPI */
+/** @file poiss_2d.h
+ * Declaration of the methods to setup up the 2D poisson equations in the form
+ * \f$ Au = v \f$ given the boundary conditions.
+ *
+ * @author Dominik Dahlem
+ */
+#ifndef __POISS2D_H__
+#define __POISS2D_H__
 
-#include "mpi-common.h"
+#include "matrix.h"
+#include "vector.h"
 
 
-void setup(int argc, char *argv[])
-{
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &mpiArgs.rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &mpiArgs.num_tasks);
-}
+void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim);
 
-void finalise()
-{
-    MPI_Finalize();
-}
+
+#endif

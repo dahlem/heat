@@ -7,24 +7,33 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include <CUnit/Basic.h>
 
-#include "conjugate_test.h"
+/** @file error.h
+ * Declaration of the error codes for this application.
+ *
+ * @author Dominik Dahlem
+ */
+#ifndef __ERROR_H__
+#define __ERROR_H__
 
 
-int main()
-{
-    /* initialize the CUnit test registry */
-    if (CUE_SUCCESS != CU_initialize_registry()) {
-        return CU_get_error();
-    }
+/** @defgroup Errors
+ * @{
+ */
 
-    registerConjugateTests();
-    
-    /* Run all tests using the CUnit Basic interface */
-    CU_basic_set_mode(CU_BRM_VERBOSE);
-    CU_basic_run_tests();
-    CU_cleanup_registry();
-   
-    return CU_get_error();
-}
+/** @def
+ * Error code if the matrix-vector dimensions do not match
+ */
+#define MATRIX_VECTOR_UNEQUAL_ROW_DIM   11
+
+
+/** @def
+ * Error code if the dimensions of two or more vectors do not match
+ */
+#define VECTOR_DIMENSION_MISMATCH       12
+
+/** @}*/
+
+
+
+#endif

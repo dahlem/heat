@@ -1,0 +1,12 @@
+#!/bin/sh
+#PBS -l walltime=00:02:00
+#PBS -q parallel
+#PBS -l cput=00:02:00
+#PBS -l nodes=3:ppn=1
+
+cat $PBS_NODEFILE
+cd $HOME/hpc/563/563_pde_conj_grad-0.2
+
+mpiexec ./src/main/pdepoiss_solv
+
+echo "Done"

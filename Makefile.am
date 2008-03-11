@@ -28,7 +28,8 @@ dist_doc_DATA =                                             \
 EXTRA_DIST = \
 	$(srcdir)/report \
 	$(srcdir)/m4/ \
-	$(srcdir)/mk/ 
+	$(srcdir)/mk/ \
+	$(srcdir)/poiss.pbs
 
 clean-local:
 	rm -rf doc/doxygen/html

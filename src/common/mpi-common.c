@@ -7,33 +7,25 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-
-/** @file error.h
- * Declaration of the error codes for the linear algebra solvers.
- *
- * @author Dominik Dahlem
- */
-#ifndef __ERROR_H__
-#define __ERROR_H__
-
-
-/** @defgroup Errors
- * @{
- */
-
-/** @def
- * Error code if the matrix-vector dimensions do not match
- */
-#define MATRIX_VECTOR_UNEQUAL_ROW_DIM   11
-
-
-/** @def
- * Error code if the dimensions of two or more vectors do not match
- */
-#define VECTOR_DIMENSION_MISMATCH       12
-
-/** @}*/
-
-
-
+#if HAVE_CONFIG_H
+# include <config.h>
 #endif
+
+#ifdef HAVE_MPI
+# include <mpi.h>
+#endif /* HAVE_MPI */
+
+#include "mpi-common.h"
+
+
+void setup(int *argc, char **argv[])
+{
+    MPI_Init(argc, argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpiArgs.rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiArgs.num_tasks);
+}
+
+void finalise()
+{
+    MPI_Finalize();
+}

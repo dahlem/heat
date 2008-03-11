@@ -101,6 +101,22 @@ int add(const vector *x, const vector *const y);
  */
 void scale(double alpha, const vector *x);
 
+/** @fn void vector_copy(const vector *x, const vector *const y)
+ * This function copies vector y into vector x, whereby vector x
+ * has to be of larger or equal length to vector y.
+ *
+ * @param const vector* the destination vector
+ * @param const vector const * the source vector
+ */
+void vector_copy(const vector *x, const vector *const y);
+
+/** @fn void vector_print(const vector *const x)
+ * This function prints a vector to standard out.
+ *
+ * @param const vector const * the vector to be printed
+ */
+void vector_print(const vector *const x);
+
 
 
 #endif

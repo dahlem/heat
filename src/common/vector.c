@@ -7,7 +7,9 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include "config.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #ifdef NDEBUG
 # include <assert.h>
@@ -19,6 +21,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "error.h"
 #include "vector.h"
@@ -125,4 +128,29 @@ void scale(double alpha, const vector *x)
     for (i = 0; i < x->len; ++i) {
         x->data[i] *= alpha;
     }
+}
+
+void vector_copy(const vector *x, const vector *const y)
+{
+#ifdef NDEBUG
+    assert(x->len >= y->len);
+#endif /* NDEBUG */
+    
+    memcpy(x->data, y->data, y->len * sizeof(double));
+}
+
+void vector_print(const vector *const x)
+{
+    int i;
+
+    for (i = 0; i < x->len; ++i) {
+        if (i == (x->len - 1)) {
+            fprintf(stdout, "%2.2f", x->data[i]);
+        } else {
+            fprintf(stdout, "%2.2f, ", x->data[i]);
+        }
+    }
+    
+    fprintf(stdout, "\n");
+    fflush(stdout);
 }

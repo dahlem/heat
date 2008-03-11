@@ -20,7 +20,7 @@
  * Arguments p, e, and m are passed in by the MPI environment, we ignore
  * those, but the have to be specified.
  */
-static const char *cl_arguments = "uh?s:t:r:p:e:m:";
+static const char *cl_arguments = "uh?s:t:r:";
 
 
 
@@ -74,9 +74,13 @@ void process_cl(int argc, char **argv)
 {
     int opt = 0;
 
+    init();
+    
     opt = getopt(argc, argv, cl_arguments);
 
     while (opt != -1) {
+        printf("process option %c\n", opt);
+        
         switch (opt) {
             case 't':
                 globalArgs.t = atoi(optarg);

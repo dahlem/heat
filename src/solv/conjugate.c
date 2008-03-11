@@ -36,13 +36,14 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
     /* calculate the residual for an initially chosen vector
      * \f$ r_0 = b - A * x_0 \f$.
      */
-    memcpy(r.data, b->data, b->len * sizeof(double));
-    memcpy(x_bar->data, x->data, x->len * sizeof(double));
+    vector_copy(&r, b);
+    vector_copy(x_bar, x);
+
     dgbmv(A, x_bar, &temp);
     daxpy(-1.0, &temp, &r);
 
     /* set \f$ p_0 = r_0 \f$*/
-    memcpy(p.data, r.data, r.len * sizeof(double));
+    vector_copy(&p, &r);
 
     /* initial values \f$ \alpha = \beta = 0 \f$ */
     alpha = beta = 0.0;
@@ -73,10 +74,10 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
         beta = (norm * norm) / error;
         
         /* \f$ p = new_r + \beta * p  \f$ */
-        memcpy(temp.data, p.data, p.len * sizeof(double));
+        vector_copy(&temp, &p);
         scale(beta, &temp);
         add(&temp, &r);
-        memcpy(p.data, temp.data, temp.len * sizeof(double));
+        vector_copy(&p, &temp);
 
         /* \f$ dp = (r, r) \f$ */
         error = dotProduct(&r, &r);
