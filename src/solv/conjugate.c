@@ -18,7 +18,7 @@
 
 
 
-int conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
+int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
 {
     vector r, p, temp;
     size_t k;
@@ -55,7 +55,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
     /* \f$ dp = (r, r) \f$ */
     error = dotProduct(&r, &r);
 
-    while ((k <= A->len) || (error > 1e-12)) {
+    while ((k <= A->len) || (error > err_thres)) {
         /* \f$ v = A * p \f$ */
         dgbmv(A, &p, &temp);
 

@@ -23,15 +23,9 @@
 #include "vector.h"
 
 
-#define POISS_2D_GB_MATRIX_DIAGS 5
-#define POISS_2D_SB_MATRIX_DIAGS 3
-
-
-
 void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim)
 {
 #ifdef HAVE_MPI
-    int diag_len;
     int col_offset;
     int elems[POISS_2D_GB_MATRIX_DIAGS];
     int index[POISS_2D_GB_MATRIX_DIAGS];
@@ -40,29 +34,36 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim)
 #endif /* HAVE_MPI */
     int num_diags;
     int i;
+    int block_matrix_dim;
+    int system_dim;
+    int rows;
+
+    block_matrix_dim = dim - 2;
+    system_dim = block_matrix_dim * block_matrix_dim;
 
 #ifdef HAVE_MPI
     /* configure the diagonal offsets */
-    index[0] = -3;
+    index[0] = -block_matrix_dim;
     index[1] = -1;
     index[2] = 0;
     index[3] = 1;
-    index[4] = 3;
+    index[4] = block_matrix_dim;
 
     num_diags = POISS_2D_GB_MATRIX_DIAGS;
-    diag_len = 9/mpiArgs.num_tasks;
+    rows = system_dim/mpiArgs.num_tasks;
     col_offset = mpiArgs.rank * mpiArgs.num_tasks;
 
     for (i = 0; i < num_diags; ++i) {
-        elems[i] = diag_len;
+        elems[i] = rows;
         index[i] += col_offset;
     }
 #else
     num_diags = POISS_2D_SB_MATRIX_DIAGS;
+    rows = system_dim;
 
-    elems[0] = 9;
-    elems[1] = 9 - 1;
-    elems[2] = 9 - 3;
+    elems[0] = system_dim;
+    elems[1] = system_dim - 1;
+    elems[2] = system_dim - block_matrix_dim;
 #endif /* HAVE_MPI */
 
     /* initialise the matrix type */
@@ -83,7 +84,7 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim)
         if ((i + index[0]) < 0 ) {
             A->diags[0].data[i] = 0;
         } else {
-            A->diags[0].data[i] = -1;
+            A->diags[0].data[i] = I_DIAG;
         }
     }
     
@@ -91,24 +92,24 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim)
         if ((i + index[1]) < 0 ) {
             A->diags[1].data[i] = 0;
         } else {
-            if ((i % 3) == 0) {
+            if ((i % block_matrix_dim) == 0) {
                 A->diags[1].data[i] = 0;
             } else {
-                A->diags[1].data[i] = -1;
+                A->diags[1].data[i] = D_DIAG_1;
             }
         }
     }
     
     for (i = 0; i < A->diags[2].len; ++i) {
-        A->diags[2].data[i] = 4;
+        A->diags[2].data[i] = D_MAIN_DIAG;
     }
     
     for (i = 0; i < A->diags[3].len; ++i) {
         if ((i + index[3]) < (mpiArgs.num_tasks * A->diags[3].len)) {
-            if (((i + 1 + mpiArgs.rank * mpiArgs.num_tasks) % 3) == 0) {
+            if (((i + 1 + mpiArgs.rank * mpiArgs.num_tasks) % block_matrix_dim) == 0) {
                 A->diags[3].data[i] = 0;
             } else {
-                A->diags[3].data[i] = -1;
+                A->diags[3].data[i] = D_DIAG_1;
             }
         } else {
             A->diags[3].data[i] = 0;
@@ -117,49 +118,39 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim)
     
     for (i = 0; i < A->diags[4].len; ++i) {
         if ((i + index[4]) < (mpiArgs.num_tasks * A->diags[4].len)) {
-            A->diags[4].data[i] = -1;
+            A->diags[4].data[i] = I_DIAG;
         } else {
             A->diags[4].data[i] = 0;
         }
-    }
-
-    /* set up the vectors for each processor */
-    vector_alloc(u, 3);
-    vector_alloc(v, 3);
-    vector_alloc(x_bar, 3);
-
-    for (i = 0; i < u->len; ++i) {
-        u->data[i] = 1;
-        v->data[i] = i + mpiArgs.rank;
     }
 #else
     matrix_alloc(A, elems, NULL);
 
     /* set up matrix for single processor */
     for (i = 0; i < A->diags[2].len; ++i) {
-        A->diags[2].data[i] = -1;
+        A->diags[2].data[i] = I_DIAG;
     }
     
     for (i = 0; i < A->diags[1].len; ++i) {
-        if (((i + 1) % 3) == 0) {
+        if (((i + 1) % block_matrix_dim) == 0) {
             A->diags[1].data[i] = 0;
         } else {
-            A->diags[1].data[i] = -1;
+            A->diags[1].data[i] = D_DIAG_1;
         }
     }
     
     for (i = 0; i < A->diags[0].len; ++i) {
-        A->diags[0].data[i] = 4;
+        A->diags[0].data[i] = D_MAIN_DIAG;
     }
+#endif /* HAVE_MPI */
 
     /* set up the vectors for each processor */
-    vector_alloc(u, 9);
-    vector_alloc(v, 9);
-    vector_alloc(x_bar, 9);
+    vector_alloc(u, rows);
+    vector_alloc(v, rows);
+    vector_alloc(x_bar, rows);
 
-    for (i = 0; i < u->len; ++i) {
+    for (i = 0; i < rows; ++i) {
         u->data[i] = 1;
         v->data[i] = i;
     }
-#endif /* HAVE_MPI */
 }

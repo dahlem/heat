@@ -24,12 +24,12 @@
 /**
  * Default space dimension
  */
-#define DEFAULT_SPACE_DIMENSION 20
+#define DEFAULT_SPACE_DIMENSION 5
 
 /**
  * Default time dimension
  */
-#define DEFAULT_TIME_DIMENSION 20
+#define DEFAULT_TIME_DIMENSION 5
 
 /**
  * Default error threshold

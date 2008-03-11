@@ -34,7 +34,6 @@ int main(int argc, char *argv[])
 {
     matrix A;
     vector u, v, x_bar;
-    int dim;
     int i;
 
 #ifdef HAVE_MPI
@@ -47,10 +46,8 @@ int main(int argc, char *argv[])
     
     print_settings();
 
-    dim = 9;
-
     /* set up the poisson matrix and vectors */
-    setup_poiss_2d(&A, &u, &v, &x_bar, dim);
+    setup_poiss_2d(&A, &u, &v, &x_bar, globalArgs.s);
 
     /* print the matrix and vectors */
 #ifdef NDEBUG
@@ -66,7 +63,7 @@ int main(int argc, char *argv[])
 #endif /* NDEBUG */
     
     /* solv with conjugate gradient */
-    conjugate(&A, &v, &u, &x_bar);
+    conjugate(&A, &v, &u, &x_bar, globalArgs.e);
 
 #ifdef HAVE_MPI
     fprintf(stdout, "Result from %d:\n", mpiArgs.rank);
@@ -96,7 +93,7 @@ void print_settings()
         fprintf(stdout, "(1) Application settings\n");
         fprintf(stdout, "Space Dimension  : %d\n", globalArgs.s);
         fprintf(stdout, "Time Dimension   : %d\n", globalArgs.t);
-        fprintf(stdout, "Error Threshold  : %f\n\n", globalArgs.e);
+        fprintf(stdout, "Error Threshold  : %e\n\n", globalArgs.e);
 
 #ifdef HAVE_MPI
         fprintf(stdout, "(2) MPI settings\n");

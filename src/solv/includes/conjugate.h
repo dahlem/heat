@@ -22,7 +22,7 @@
 #include "vector.h"
 
 
-/** @fn conjugate(matrix *A, vector *b, vector *x, vector *x_bar)
+/** @fn int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
  *
  * This method solves the linear system with the Conjugate Gradient method.
  *
@@ -30,9 +30,10 @@
  * @param vector* the vector b
  * @param vector* the vector x
  * @param vector* the solution vector x_bar
+ * @param double the error threshold
  * @return 0, if success. Otherwise the error code.
  */
-int conjugate(matrix *A, vector *b, vector *x, vector *x_bar);
+int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres);
 
 
 

@@ -77,7 +77,7 @@ void testConjugateSB()
         u.data[i] = 1;
     }
 
-    CU_ASSERT_EQUAL(conjugate(&A, &v, &u, &x_bar), 0);
+    CU_ASSERT_EQUAL(conjugate(&A, &v, &u, &x_bar, 1e-12), 0);
 
     temp = gsl_vector_calloc(v.len);
 

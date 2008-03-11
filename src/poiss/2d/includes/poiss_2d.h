@@ -10,7 +10,9 @@
 
 /** @file poiss_2d.h
  * Declaration of the methods to setup up the 2D poisson equations in the form
- * \f$ Au = v \f$ given the boundary conditions.
+ * \f$ Au = v \f$ given the boundary conditions. Using the finite difference scheme
+ * to solve the 2D poisson equation with an \f$ m x n \f$ grid, where \f$ m = n \f$, i.e.
+ * there are equal grid points in the spatial and time direction.
  *
  * @author Dominik Dahlem
  */
@@ -19,6 +21,35 @@
 
 #include "matrix.h"
 #include "vector.h"
+
+
+/** @def POISS_2D_GB_MATRIX_DIAGS
+ * The number of diagonals to be stored for the general banded form of the poisson
+ * equation.
+ */
+#define POISS_2D_GB_MATRIX_DIAGS 5
+
+/** @def POISS_2D_SB_MATRIX_DIAGS
+ * The number of diagonals to be stored for the symmetric banded form of the poisson
+ * equation.
+ */
+#define POISS_2D_SB_MATRIX_DIAGS 3
+
+/** @def D_MAIN_DIAG
+ * Main diagonal of the \f$m x m\f$ diagonal matrix D
+ */
+#define D_MAIN_DIAG 4
+
+/** @def D_DIAG_1
+ * Diagonal with offset 1 of the \f$m x m\f$ diagonal matrix D
+ */
+#define D_DIAG_1    -1
+
+/** @def I_DIAG
+ * Main diagonal of the \f$m x m\f$ identity matrix I
+ */
+#define I_DIAG      -1
+
 
 
 void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim);
