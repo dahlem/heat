@@ -12,15 +12,14 @@
 #include <unistd.h>
 
 #include "cl.h"
+#include "error.h"
 
 
 /** @var cl_arguments
  * getopt configuration of the command-line parameters.
  * All command-line arguments are optional.
- * Arguments p, e, and m are passed in by the MPI environment, we ignore
- * those, but the have to be specified.
  */
-static const char *cl_arguments = "uh?s:t:r:";
+static const char *cl_arguments = "uh?s:t:r:1:2:3:4:";
 
 
 
@@ -30,6 +29,10 @@ void displayHelp()
     printf(" -s : Space dimension.\n");
     printf(" -t : Time dimension.\n");
     printf(" -r : Error threshold.\n");
+    printf(" -1 : Lower bound of the range in the x dimension.\n");
+    printf(" -2 : Upper bound of the range in the x dimension.\n");
+    printf(" -3 : Lower bound of the range in the y dimension.\n");
+    printf(" -4 : Upper bound of the range in the y dimension.\n");
     printf(" -? : This help message.\n");
     printf(" -h : This help message.\n");
 
@@ -42,14 +45,20 @@ void init()
     globalArgs.s = DEFAULT_SPACE_DIMENSION;
     globalArgs.t = DEFAULT_TIME_DIMENSION;
     globalArgs.e = DEFAULT_ERROR;
+    globalArgs.x0 = DEFAULT_X0;
+    globalArgs.x1 = DEFAULT_X1;
+    globalArgs.y0 = DEFAULT_Y0;
+    globalArgs.y1 = DEFAULT_Y1;
 }
 
 
-/** @fn void verify_cl()
+/** @fn int verify_cl()
  * Verify the command line arguments and check that they are consistent with each
  * other.
+ *
+ * @return 0, if sucess. Otherwise the error code.
  */
-void verify_cl()
+int verify_cl()
 {
     if (globalArgs.s < 3) {
         globalArgs.s = DEFAULT_SPACE_DIMENSION;
@@ -60,17 +69,37 @@ void verify_cl()
 
     /* make sure we have equal mesh-points in space and time */
     if (globalArgs.t < globalArgs.s) {
+        fprintf(stderr, "Warning: We assume an equal number of mesh points for both dimensions.\n");
+        fflush(stderr);
         globalArgs.t = globalArgs.s;
     } else if (globalArgs.t > globalArgs.s) {
+        fprintf(stderr, "Warning: We assume an equal number of mesh points for both dimensions.\n");
+        fflush(stderr);
         globalArgs.s = globalArgs.t;
     }
     if (globalArgs.e < 0) {
+        fprintf(stderr, "Warning: The error threshold has to be possitive.\n\
+Use the default threshold instead.\n");
+        
+        fflush(stderr);
         globalArgs.e = DEFAULT_ERROR;
     }
+
+    if ((globalArgs.x1 - globalArgs.x0)
+        != (globalArgs.y1 - globalArgs.y0)) {
+        fprintf(stderr, "Error: We assume equal input ranges for both dimensions.\n");
+        fflush(stderr);
+        return GRID_DIM_MISMATCH;
+    }
+
+    /* derive the delta value which we assume is equal in both grid dimensions. */
+    globalArgs.d = (globalArgs.x1 - globalArgs.x0) / globalArgs.s;
+
+    return EXIT_SUCCESS;
 }
 
 
-void process_cl(int argc, char **argv)
+int process_cl(int argc, char **argv)
 {
     int opt = 0;
 
@@ -91,11 +120,17 @@ void process_cl(int argc, char **argv)
             case 'r':
                 globalArgs.e = atof(optarg);
                 break;
-            case 'p':
+            case '1':
+                globalArgs.x0 = atof(optarg);
                 break;
-            case 'e':
+            case '2':
+                globalArgs.x1 = atof(optarg);
                 break;
-            case 'm':
+            case '3':
+                globalArgs.y0 = atof(optarg);
+                break;
+            case '4':
+                globalArgs.y1 = atof(optarg);
                 break;
             case 'h':
             case '?':
@@ -107,5 +142,5 @@ void process_cl(int argc, char **argv)
         opt = getopt(argc, argv, cl_arguments);
     }
 
-    verify_cl();
+    return verify_cl();
 }

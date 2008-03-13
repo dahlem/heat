@@ -8,34 +8,31 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file error.h
- * Declaration of the error codes for this application.
+/** @file macros.h
+ * Declaration of some macros used in this application
  *
  * @author Dominik Dahlem
  */
-#ifndef __ERROR_H__
-#define __ERROR_H__
+#ifndef __MACROS_H__
+#define __MACROS_H__
 
 
-/** @defgroup Errors
+/** @defgroup Macros
  * @{
  */
 
-/** @def MATRIX_VECTOR_UNEQUAL_ROW_DIM
- * Error code if the matrix-vector dimensions do not match
+#ifndef MAX
+/** @def MAX
+ * Given two numbers, return the bigger one.
  */
-#define MATRIX_VECTOR_UNEQUAL_ROW_DIM   11
-
-/** @def VECTOR_DIMENSION_MISMATCH
- * Error code if the dimensions of two or more vectors do not match
+# define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+#ifndef MIN
+/** @def MIN
+ * Given two numbers, return the smaller one.
  */
-#define VECTOR_DIMENSION_MISMATCH       12
-
-/** @def GRID_DIM_MISMATCH
- * Error code if the dimensions of grid points for the poisson equations
- * does not match
- */
-#define GRID_DIM_MISMATCH               13
+# define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
 
 /** @}*/
 

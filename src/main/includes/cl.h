@@ -21,20 +21,40 @@
 /** @defgroup Application Definition of default application settings
  * @{
  */
-/**
+/** @define DEFAULT_SPACE_DIMENSION
  * Default space dimension
  */
 #define DEFAULT_SPACE_DIMENSION 5
 
-/**
+/** @define DEFAULT_TIME_DIMENSION
  * Default time dimension
  */
 #define DEFAULT_TIME_DIMENSION 5
 
-/**
+/** @define DEFAULT_ERROR
  * Default error threshold
  */
-#define DEFAULT_ERROR 1e-12
+#define DEFAULT_ERROR 1e-6
+
+/** @def DEFAULT_X0
+ * Lower bound of the range in the x dimension.
+ */
+#define DEFAULT_X0 -0.5
+
+/** @def DEFAULT_X1
+ * Upper bound of the range in the x dimension.
+ */
+#define DEFAULT_X1 2
+
+/** @def DEFAULT_Y0
+ * Lower bound of the range in the y dimension.
+ */
+#define DEFAULT_Y0 -2
+
+/** @def DEFAULT_Y1
+ * Upper bound of the range in the y dimension.
+ */
+#define DEFAULT_Y1 0.5
 
 /** @}*/
 
@@ -44,9 +64,11 @@
  * command-line.
  */
 struct globalArgs_t {
-    unsigned int s; /* space dimension */
-    unsigned int t; /* time dimension */
-    double e; /* error threshold */
+    unsigned int s;         /* space dimension */
+    unsigned int t;         /* time dimension */
+    double e;               /* error threshold */
+    double d;               /* the step size in the 2D grid (derived from the dimension) */
+    double x0, x1, y0, y1;  /* input range of the 2D poisson equation */
 } globalArgs;
 
 
@@ -66,8 +88,9 @@ void init();
  * @param int number of arguments
  * @param char** pointer to the character array representing the command-line
  *               parameters
+ * @return 0, if success. Otherwise the error code.
  */
-void process_cl(int argc, char **argv);
+int process_cl(int argc, char **argv);
 
 
 

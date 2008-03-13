@@ -14,12 +14,7 @@
 #ifdef HAVE_LIBGSL
 # include <gsl/gsl_math.h>
 #else
-# ifndef MAX
-#  define MAX(a, b) ((a) > (b) ? (a) : (b))
-# endif
-# ifndef MIN
-#  define MIN(a, b) ((a) < (b) ? (a) : (b))
-# endif
+# include "macros.h"
 #endif /* HAVE_LIBGSL */
 
 #ifdef HAVE_MPI
@@ -50,7 +45,7 @@ void dcdssbmv(const matrix *const mat, const vector *const u, const vector *v)
             if (i < (mat->diags[0].len - p)) {
                 v->data[i] += mat->diags[j].data[i] * u->data[i + p];
             }
-        
+
             /* 3. check lower diagonal elements */
             if ((i - p) >= 0) {
                 v->data[i] += mat->diags[j].data[i - p] * u->data[i - p];
@@ -62,7 +57,7 @@ void dcdssbmv(const matrix *const mat, const vector *const u, const vector *v)
 void dcdsgbmv(const matrix *const mat, const vector *const u, const vector *v)
 {
     int i, j;
-    
+
     zero(v);
 
     for (i = 0; i < mat->len; ++i) {
@@ -103,7 +98,7 @@ void dgbmv(const matrix *const mat, const vector *const u, const vector *v)
     fprintf(stdout, "Process %d got u-vector:\n", mpiArgs.rank);
     vector_print(&u_global);
 #endif /* NDEBUG */
-    
+
     if (mpi_ret != MPI_SUCCESS) {
         fprintf(stderr, "The MPI_Allgather primitive returned error: %d.\n", mpi_ret);
         fflush(stderr);

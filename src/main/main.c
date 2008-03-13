@@ -16,11 +16,13 @@
 # include "mpi-common.h"
 #endif /* HAVE_MPI */
 
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "cl.h"
 #include "conjugate.h"
+#include "error.h"
 #include "matrix.h"
 #include "mult.h"
 #include "poiss_2d.h"
@@ -28,6 +30,8 @@
 
 
 void print_settings();
+double src_dens(double x, double y);
+double bound_cond(double x, double y);
 
 
 int main(int argc, char *argv[])
@@ -35,22 +39,34 @@ int main(int argc, char *argv[])
     matrix A;
     vector u, v, x_bar;
     int i;
+    int status;
+    double square_pnts[2][2];
 
 #ifdef HAVE_MPI
-    MPI_Status status;
-
     setup(&argc, &argv);
-
 #endif /* HAVE_MPI */
-    process_cl(argc, argv);
+
+    /* parse the command-line arguments */
+    if ((status = process_cl(argc, argv)) != 0) {
+#ifdef HAVE_MPI
+        finalise();
+#endif /* HAVE_MPI */
+        return status;
+    }
+
+    square_pnts[0][0] = globalArgs.x0;
+    square_pnts[0][1] = globalArgs.x1;
+    square_pnts[1][0] = globalArgs.y0;
+    square_pnts[1][1] = globalArgs.y1;
     
     print_settings();
 
     /* set up the poisson matrix and vectors */
-    setup_poiss_2d(&A, &u, &v, &x_bar, globalArgs.s);
+    setup_poiss_2d(&A, &u, &v, &x_bar, globalArgs.s, globalArgs.d,
+                   square_pnts, *src_dens, *bound_cond);
 
-    /* print the matrix and vectors */
 #ifdef NDEBUG
+    /* print the matrix and vectors */
 #ifdef HAVE_MPI
     fprintf(stdout, "Partial matrix %d:\n", mpiArgs.rank);
 #else
@@ -62,16 +78,17 @@ int main(int argc, char *argv[])
     }
 #endif /* NDEBUG */
     
-    /* solv with conjugate gradient */
+    /* solve with conjugate gradient */
     conjugate(&A, &v, &u, &x_bar, globalArgs.e);
 
+#ifdef NDEBUG
 #ifdef HAVE_MPI
     fprintf(stdout, "Result from %d:\n", mpiArgs.rank);
 #else
     printf("Result:\n");
-#endif
-
+#endif /* HAVE_MPI */
     vector_print(&x_bar);
+#endif /* NDEBUG */
 
     matrix_free(&A);
     vector_free(&u);
@@ -93,6 +110,9 @@ void print_settings()
         fprintf(stdout, "(1) Application settings\n");
         fprintf(stdout, "Space Dimension  : %d\n", globalArgs.s);
         fprintf(stdout, "Time Dimension   : %d\n", globalArgs.t);
+        fprintf(stdout, "Delta            : %1.4f\n\n", globalArgs.d);
+        fprintf(stdout, "Input Range      : %2.2f <= x <= %2.2f; %2.2f <= y <= %2.2f\n",
+                globalArgs.x0, globalArgs.x1, globalArgs.y0, globalArgs.y1);
         fprintf(stdout, "Error Threshold  : %e\n\n", globalArgs.e);
 
 #ifdef HAVE_MPI
@@ -104,3 +124,14 @@ void print_settings()
     fprintf(stdout, "\n\n");
     fflush(stdout);
 }
+
+double src_dens(double x, double y)
+{
+    return - (4 * cos(x + y) * sin(x - y));
+}
+
+double bound_cond(double x, double y)
+{
+    return cos(x + y) * sin(x - y);
+}
+

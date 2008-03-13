@@ -1,0 +1,4 @@
+/common_test
+/common_test-common_suite.o
+/common_test-mult_test.o
+/common_test-vector_test.o

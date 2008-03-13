@@ -1,5 +1,9 @@
 .deps
 .libs
+/GPATH
+/GRTAGS
+/GSYMS
+/GTAGS
 /autom4te.cache
 /autoscan-2.61.log
 /config.h

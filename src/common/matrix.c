@@ -17,13 +17,13 @@
 void cds_matrix_alloc(matrix *mat, int len, int *elem)
 {
     int i;
-    
+
     mat->len = len;
     mat->diags = malloc(sizeof(vector) * len);
 
     /* allocate memory for the bands */
     for (i = 0; i < len; ++i) {
-        vector_alloc(&(mat->diags[i]), elem[i]);
+        vector_calloc(&(mat->diags[i]), elem[i]);
     }
 }
 
@@ -41,7 +41,7 @@ void cds_matrix_free(matrix *mat)
 void cdsgb_matrix_alloc(matrix *mat, int len, int *elem, int *index)
 {
     int i;
-    
+
     mat->len = len;
     mat->diags = malloc(sizeof(vector) * len);
     mat->index = malloc(sizeof(int) * len);

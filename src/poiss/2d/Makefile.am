@@ -18,6 +18,7 @@ libpoiss2d_la_CPPFLAGS =                                              \
 	-I$(top_srcdir)/src/common/includes
 
 libpoiss2d_la_LIBADD =                                                \
+	-lm                                                           \
 	$(top_srcdir)/src/common/libcommon.la
 
 

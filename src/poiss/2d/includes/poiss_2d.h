@@ -52,7 +52,10 @@
 
 
 
-void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim);
+void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim,
+                    double delta, double coord[4][2],
+                    double (*src_dens_funcPtr)(double, double),
+                    double (*bound_cond_funcPtr)(double, double));
 
 
 #endif
