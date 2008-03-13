@@ -31,8 +31,25 @@ void init_matrix(matrix *A, int block_matrix_dim)
     int i;
 
 #ifdef HAVE_MPI
+    int len;
+    int row_adjust, system_dim;
+    int rows;
+
+    system_dim = block_matrix_dim * block_matrix_dim;
+    row_adjust = system_dim % mpiArgs.num_tasks;
+    rows = (system_dim + row_adjust) / mpiArgs.num_tasks;
+
+    /* the diagonals have equal lengths */
+    len = A->diags[0].len;
+
+    /* the last process potentially needs to adjust for unequal decomposition */
+    if (mpiArgs.rank == (mpiArgs.num_tasks - 1)) {
+        /* we discount row_adjust from the length of the diagonals */
+        len -= row_adjust;
+    }
+
     /* set up partial matrix for each processor */
-    for (i = 0; i < A->diags[0].len; ++i) {
+    for (i = 0; i < len; ++i) {
         if ((i + A->index[0]) < 0 ) {
             A->diags[0].data[i] = 0;
         } else {
@@ -40,11 +57,11 @@ void init_matrix(matrix *A, int block_matrix_dim)
         }
     }
 
-    for (i = 0; i < A->diags[1].len; ++i) {
+    for (i = 0; i < len; ++i) {
         if ((i + A->index[1]) < 0 ) {
             A->diags[1].data[i] = 0;
         } else {
-            if ((i % block_matrix_dim) == 0) {
+            if (((i + mpiArgs.rank * rows) % block_matrix_dim) == 0) {
                 A->diags[1].data[i] = 0;
             } else {
                 A->diags[1].data[i] = D_DIAG_1;
@@ -52,13 +69,13 @@ void init_matrix(matrix *A, int block_matrix_dim)
         }
     }
 
-    for (i = 0; i < A->diags[2].len; ++i) {
+    for (i = 0; i < len; ++i) {
         A->diags[2].data[i] = D_MAIN_DIAG;
     }
 
-    for (i = 0; i < A->diags[3].len; ++i) {
-        if ((i + A->index[3]) < (mpiArgs.num_tasks * A->diags[3].len)) {
-            if (((i + 1 + mpiArgs.rank * mpiArgs.num_tasks) % block_matrix_dim) == 0) {
+    for (i = 0; i < len; ++i) {
+        if ((i + A->index[3]) < (((mpiArgs.num_tasks - 1) * A->diags[3].len) + len)) {
+            if (((i + 1 + mpiArgs.rank * rows) % block_matrix_dim) == 0) {
                 A->diags[3].data[i] = 0;
             } else {
                 A->diags[3].data[i] = D_DIAG_1;
@@ -68,8 +85,8 @@ void init_matrix(matrix *A, int block_matrix_dim)
         }
     }
 
-    for (i = 0; i < A->diags[4].len; ++i) {
-        if ((i + A->index[4]) < (mpiArgs.num_tasks * A->diags[4].len)) {
+    for (i = 0; i < len; ++i) {
+        if ((i + A->index[4]) < (((mpiArgs.num_tasks - 1) * A->diags[4].len) + len)) {
             A->diags[4].data[i] = I_DIAG;
         } else {
             A->diags[4].data[i] = 0;
@@ -251,7 +268,7 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim,
     row_adjust = system_dim % mpiArgs.num_tasks;
     num_diags = POISS_2D_GB_MATRIX_DIAGS;
     rows = (system_dim + row_adjust) / mpiArgs.num_tasks;
-    col_offset = mpiArgs.rank * mpiArgs.num_tasks;
+    col_offset = mpiArgs.rank * rows;
 
     for (i = 0; i < num_diags; ++i) {
         elems[i] = rows;
