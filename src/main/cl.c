@@ -19,7 +19,7 @@
  * getopt configuration of the command-line parameters.
  * All command-line arguments are optional.
  */
-static const char *cl_arguments = "uh?s:t:r:1:2:3:4:";
+static const char *cl_arguments = "uh?s:t:r:1:2:3:4:f:";
 
 
 
@@ -29,6 +29,7 @@ void displayHelp()
     printf(" -s : Space dimension.\n");
     printf(" -t : Time dimension.\n");
     printf(" -r : Error threshold.\n");
+    printf(" -f : File name for the result surface.\n");
     printf(" -1 : Lower bound of the range in the x dimension.\n");
     printf(" -2 : Upper bound of the range in the x dimension.\n");
     printf(" -3 : Lower bound of the range in the y dimension.\n");
@@ -45,6 +46,7 @@ void init()
     globalArgs.s = DEFAULT_SPACE_DIMENSION;
     globalArgs.t = DEFAULT_TIME_DIMENSION;
     globalArgs.e = DEFAULT_ERROR;
+    globalArgs.f = DEFAULT_FILENAME;
     globalArgs.x0 = DEFAULT_X0;
     globalArgs.x1 = DEFAULT_X1;
     globalArgs.y0 = DEFAULT_Y0;
@@ -80,7 +82,7 @@ int verify_cl()
     if (globalArgs.e < 0) {
         fprintf(stderr, "Warning: The error threshold has to be possitive.\n\
 Use the default threshold instead.\n");
-        
+
         fflush(stderr);
         globalArgs.e = DEFAULT_ERROR;
     }
@@ -93,7 +95,7 @@ Use the default threshold instead.\n");
     }
 
     /* derive the delta value which we assume is equal in both grid dimensions. */
-    globalArgs.d = (globalArgs.x1 - globalArgs.x0) / globalArgs.s;
+    globalArgs.d = (globalArgs.x1 - globalArgs.x0) / (globalArgs.s - 1);
 
     return EXIT_SUCCESS;
 }
@@ -104,12 +106,12 @@ int process_cl(int argc, char **argv)
     int opt = 0;
 
     init();
-    
+
     opt = getopt(argc, argv, cl_arguments);
 
     while (opt != -1) {
         printf("process option %c\n", opt);
-        
+
         switch (opt) {
             case 't':
                 globalArgs.t = atoi(optarg);
@@ -119,6 +121,9 @@ int process_cl(int argc, char **argv)
                 break;
             case 'r':
                 globalArgs.e = atof(optarg);
+                break;
+            case 'f':
+                globalArgs.f = optarg;
                 break;
             case '1':
                 globalArgs.x0 = atof(optarg);

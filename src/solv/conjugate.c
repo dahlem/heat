@@ -7,6 +7,15 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_MPI
+# include <mpi.h>
+# include "mpi-common.h"
+#endif /* HAVE_MPI */
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -23,6 +32,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
     vector r, p, temp;
     size_t k;
     double error, dotprod, alpha, beta, norm;
+    int maxCount;
     
     if (b->len != A->diags[0].len) {
         return MATRIX_VECTOR_UNEQUAL_ROW_DIM;
@@ -38,6 +48,13 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
      */
     vector_copy(&r, b);
     vector_copy(x_bar, x);
+
+    /* the length of the b-vector is equivalent to the dimension of the global matrix A */
+#ifdef HAVE_MPI
+    maxCount = mpiArgs.num_tasks * b->len;
+#else
+    maxCount = b->len;
+#endif /* HAVE_MPI */
 
     dgbmv(A, x_bar, &temp);
     daxpy(-1.0, &temp, &r);
@@ -55,7 +72,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
     /* \f$ dp = (r, r) \f$ */
     error = dotProduct(&r, &r);
 
-    while ((k <= A->len) || (error > err_thres)) {
+    while ((k <= maxCount) || (error > err_thres)) {
         /* \f$ v = A * p \f$ */
         dgbmv(A, &p, &temp);
 

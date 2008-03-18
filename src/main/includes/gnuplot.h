@@ -8,42 +8,19 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file error.h
- * Declaration of the error codes for this application.
+/** @file gnuplot.h
+ * Declaration of methods to print a gnuplot data file.
  *
  * @author Dominik Dahlem
  */
-#ifndef __ERROR_H__
-#define __ERROR_H__
+
+#ifndef __GNUPLOT_H__
+#define __GNUPLOT_H__
+
+#include "vector.h"
 
 
-/** @defgroup Errors
- * @{
- */
-
-/** @def MATRIX_VECTOR_UNEQUAL_ROW_DIM
- * Error code if the matrix-vector dimensions do not match
- */
-#define MATRIX_VECTOR_UNEQUAL_ROW_DIM   11
-
-/** @def VECTOR_DIMENSION_MISMATCH
- * Error code if the dimensions of two or more vectors do not match
- */
-#define VECTOR_DIMENSION_MISMATCH       12
-
-/** @def GRID_DIM_MISMATCH
- * Error code if the dimensions of grid points for the poisson equations
- * does not match
- */
-#define GRID_DIM_MISMATCH               13
-
-/** @def FILE_OPEN_FOR_WRITE_ERROR
- * Error code if a file cannot be opened with write permission
- */
-#define FILE_OPEN_FOR_WRITE_ERROR       14
-
-/** @}*/
-
+int print_surface(vector *vec, int dim, double (*bound_cond_funcPtr)(double, double));
 
 
 #endif

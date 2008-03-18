@@ -27,14 +27,14 @@
 enum matrix_type {
     SB, /** Symmetric Banded matrix type */
     GB  /** Generic Banded matrix type */
-};  
+};
 
 /** @enum matrix_storage
  * This enumeration identifies the supported matrix storage formats.
  */
 enum matrix_storage {
     CDS  /** Compressed Diagonal Storage format */
-};  
+};
 
 /** @typedef matrix
  * This structure represents a matrix which can be represented as a generic banded
@@ -45,7 +45,7 @@ enum matrix_storage {
  * the CDS storage format requires the specification of the relative offsets of each
  * diagonal to the main diagonal, where the main diagonal is 0.
  */
-typedef struct 
+typedef struct
 {
     int len; /** the number of diagonals*/
     int *index; /** the data array of indeces relative to the main diagonal */
@@ -100,11 +100,17 @@ void cdsgb_matrix_free(matrix *mat);
  */
 void matrix_alloc(matrix *mat, int *elem, int *index);
 
-/** @void matrix_free(matrix *mat)
+/** @fn void matrix_free(matrix *mat)
  * Free the allocated memory for the matrix.
  */
 void matrix_free(matrix *mat);
 
+/** @fn void matrix_print(matrix *mat)
+ * Print a given matrix to stdout.
+ *
+ * @param matrix* the matrix to be printed
+ */
+void matrix_print(matrix *mat);
 
 
 #endif

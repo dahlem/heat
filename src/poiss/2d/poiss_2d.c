@@ -116,6 +116,7 @@ void init_v(vector *v, int dim, double delta, double coord[2][2],
             double (*src_dens_funcPtr)(double, double),
             double (*bound_cond_funcPtr)(double, double))
 {
+    double north, east, south, west;
     double d_squared;           /* delta^2 */
     double rows, cols;          /* max rows and cols; adjusted in the MPI case */
     int i, j;                   /* v-indeces; adjusted in the MPI case */
@@ -150,80 +151,65 @@ void init_v(vector *v, int dim, double delta, double coord[2][2],
     vector_calloc(v, row_block);
 
     /* assign column-wise from left to right */
-    for (i = (int) row_offset; i < rows; ++i) {
-        for (j = (int) col_offset; j < cols; ++j) {
+    for (i = row_offset; i < rows; ++i) {
+        for (j = col_offset; j < cols; ++j) {
             /* we are done assigning values to the v vector */
             if (row_index == row_block) {
                 return;
             }
 
-            fprintf(stdout, "f_{%d,%d} = %f\n", i+1, j+1, src_dens_funcPtr(coord[0][0] + (delta * (i + 1)),
-                                                                       coord[0][1] + (delta * (j + 1))));
-
             v->data[row_index] =
                 d_squared
-                * src_dens_funcPtr(coord[0][0] + (delta * (i + 1)),
-                                   coord[0][1] + (delta * (j + 1)));
+                * src_dens_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)),
+                                   coord[1][0] + (delta * ((double) j + 1.0)));
 
             if (i == 0) {
                 /* left column */
 
                 if (j == 0) {
                     /* bottom row */
-                    fprintf(stdout, "v_{0,1} = %f\n", bound_cond_funcPtr(coord[0][0], coord[1][0] + delta));
-                    fprintf(stdout, "v_{1,0} = %f\n", bound_cond_funcPtr(coord[0][0] + delta, coord[1][0]));
                     v->data[row_index] +=
                         bound_cond_funcPtr(coord[0][0], coord[1][0] + delta)
                         + bound_cond_funcPtr(coord[0][0] + delta, coord[1][0]);
                 } else if (j == (dim - 1)) {
                     /* top row */
-                    fprintf(stdout, "v_{0,%d} = %f\n", j+1, bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * (j + 1))));
-                    fprintf(stdout, "v_{1,%d} = %f\n", j+2, bound_cond_funcPtr(coord[0][0] + delta, coord[1][0] + (delta * (j + 2))));
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * (j + 1)))
-                        + bound_cond_funcPtr(coord[0][0] + delta, coord[1][0] + (delta * (j + 2)));
+                        bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * ((double) j + 1.0)))
+                        + bound_cond_funcPtr(coord[0][0] + delta, coord[1][0] + (delta * ((double)j + 2.0)));
                 } else {
                     /* middle rows */
-                    fprintf(stdout, "v_{0,%d} = %f\n", j+1, bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * (j + 1))));
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * (j + 1)));
+                        bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * ((double) j + 1.0)));
                 }
             } else if (i == (dim - 1)) {
                 /* right column */
 
                 if (j == 0) {
                     /* bottom row */
-                    fprintf(stdout, "v_{%d,0} = %f\n", i+1, bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0]));
-                    fprintf(stdout, "v_{%d,1} = %f\n", i+2, bound_cond_funcPtr(coord[0][0] + (delta * (i + 2)), coord[1][0] + delta));
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0])
-                        + bound_cond_funcPtr(coord[0][0] + (delta * (i + 2)), coord[1][0] + delta);
+                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0])
+                        + bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 2.0)), coord[1][0] + delta);
                 } else if (j == (dim - 1)) {
                     /* top row */
-                    fprintf(stdout, "v_{%d,%d} = %f\n", i+2, j+1, bound_cond_funcPtr(coord[0][0] + (delta * (i + 2)), coord[1][0] + (delta * (j + 1))));
-                    fprintf(stdout, "v_{%d,%d} = %f\n", i+1, j+2, bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0] + (delta * (j + 2))));
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * (i + 2)), coord[1][0] + (delta * (j + 1)))
-                        + bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0] + (delta * (j + 2)));
+                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 2.0)), coord[1][0] + (delta * ((double) j + 1.0)))
+                        + bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0] + (delta * ((double) j + 2.0)));
                 } else {
                     /* middle rows */
-                    fprintf(stdout, "v_{%d,%d} = %f\n", i+2, j+1, bound_cond_funcPtr(coord[0][0] + (delta * (i + 2)), coord[1][0] + (delta * (j + 1))));
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * (i + 2)), coord[1][0] + (delta * (j + 1)));
+                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 2.0)), coord[1][0] + (delta * ((double) j + 1.0)));
                 }
             } else {
                 /* middle column */
 
                 if (j == 0) {
                     /* bottom row */
-                    fprintf(stdout, "v_{%d,0} = %f\n", i+1, bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0]));
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0]);
+                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0]);
                 } else if (j == (dim - 1)) {
                     /* top row */
-                    fprintf(stdout, "v_{%d,%d} = %f\n", i+1, j+2, bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0]));
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * (i + 1)), coord[1][0] + (delta * (j + 2)));
+                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0] + (delta * ((double) j + 2.0)));
                 }
             }
 
@@ -313,5 +299,4 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim,
 
     /* initialise the v vector */
     init_v(v, block_matrix_dim, delta, coord, src_dens_funcPtr, bound_cond_funcPtr);
-    vector_print(v);
 }

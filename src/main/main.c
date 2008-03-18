@@ -23,8 +23,8 @@
 #include "cl.h"
 #include "conjugate.h"
 #include "error.h"
+#include "gnuplot.h"
 #include "matrix.h"
-#include "mult.h"
 #include "poiss_2d.h"
 #include "vector.h"
 
@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
 {
     matrix A;
     vector u, v, x_bar;
-    int i;
     int status;
     double square_pnts[2][2];
 
@@ -58,7 +57,7 @@ int main(int argc, char *argv[])
     square_pnts[0][1] = globalArgs.x1;
     square_pnts[1][0] = globalArgs.y0;
     square_pnts[1][1] = globalArgs.y1;
-    
+
     print_settings();
 
     /* set up the poisson matrix and vectors */
@@ -67,28 +66,23 @@ int main(int argc, char *argv[])
 
 #ifdef NDEBUG
     /* print the matrix and vectors */
-#ifdef HAVE_MPI
+# ifdef HAVE_MPI
     fprintf(stdout, "Partial matrix %d:\n", mpiArgs.rank);
-#else
+# else
     printf("Matrix:\n");
-#endif /* HAVE_MPI */
-
-    for (i = 0; i < A.len; ++i) {
-        vector_print(&(A.diags[i]));
-    }
+# endif /* HAVE_MPI */
+    matrix_print(&A);
 #endif /* NDEBUG */
-    
+
     /* solve with conjugate gradient */
-    conjugate(&A, &v, &u, &x_bar, globalArgs.e);
+    if (status == 0) {
+        status = conjugate(&A, &v, &u, &x_bar, globalArgs.e);
+    }
 
-#ifdef NDEBUG
-#ifdef HAVE_MPI
-    fprintf(stdout, "Result from %d:\n", mpiArgs.rank);
-#else
-    printf("Result:\n");
-#endif /* HAVE_MPI */
-    vector_print(&x_bar);
-#endif /* NDEBUG */
+    /* print the vector into a gnuplot format */
+    if (status == 0) {
+        status = print_surface(&x_bar, globalArgs.s - 2, *bound_cond);
+    }
 
     matrix_free(&A);
     vector_free(&u);
@@ -99,7 +93,7 @@ int main(int argc, char *argv[])
     finalise();
 #endif /* HAVE_MPI */
 
-    return EXIT_SUCCESS;
+    return status;
 }
 
 void print_settings()
@@ -127,11 +121,10 @@ void print_settings()
 
 double src_dens(double x, double y)
 {
-    return - (4 * cos(x + y) * sin(x - y));
+    return 4.0 * cos(x + y) * sin(x - y);
 }
 
 double bound_cond(double x, double y)
 {
     return cos(x + y) * sin(x - y);
 }
-

@@ -38,17 +38,17 @@
 /** @def D_MAIN_DIAG
  * Main diagonal of the \f$m x m\f$ diagonal matrix D
  */
-#define D_MAIN_DIAG 4
+#define D_MAIN_DIAG 4.0
 
 /** @def D_DIAG_1
  * Diagonal with offset 1 of the \f$m x m\f$ diagonal matrix D
  */
-#define D_DIAG_1    -1
+#define D_DIAG_1    -1.0
 
 /** @def I_DIAG
  * Main diagonal of the \f$m x m\f$ identity matrix I
  */
-#define I_DIAG      -1
+#define I_DIAG      -1.0
 
 
 

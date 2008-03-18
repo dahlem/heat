@@ -82,3 +82,12 @@ void matrix_free(matrix *mat)
         cdsgb_matrix_free(mat);
     }
 }
+
+void matrix_print(matrix *mat)
+{
+    int i;
+
+    for (i = 0; i < mat->len; ++i) {
+        vector_print(&(mat->diags[i]));
+    }
+}

@@ -44,17 +44,22 @@
 /** @def DEFAULT_X1
  * Upper bound of the range in the x dimension.
  */
-#define DEFAULT_X1 2
+#define DEFAULT_X1 2.0
 
 /** @def DEFAULT_Y0
  * Lower bound of the range in the y dimension.
  */
-#define DEFAULT_Y0 -2
+#define DEFAULT_Y0 -2.0
 
 /** @def DEFAULT_Y1
  * Upper bound of the range in the y dimension.
  */
 #define DEFAULT_Y1 0.5
+
+/** @def DEFAULT_FILENAME
+ * Default file name for the result surface
+ */
+#define DEFAULT_FILENAME "./result.dat"
 
 /** @}*/
 
@@ -69,6 +74,7 @@ struct globalArgs_t {
     double e;               /* error threshold */
     double d;               /* the step size in the 2D grid (derived from the dimension) */
     double x0, x1, y0, y1;  /* input range of the 2D poisson equation */
+    char *f;                /* filename for the result surface */
 } globalArgs;
 
 
