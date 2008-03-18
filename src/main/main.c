@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
         return status;
     }
 
+    /* specify the domain */
     square_pnts[0][0] = globalArgs.x0;
     square_pnts[0][1] = globalArgs.x1;
     square_pnts[1][0] = globalArgs.y0;

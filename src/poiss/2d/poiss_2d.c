@@ -93,7 +93,8 @@ void init_matrix(matrix *A, int block_matrix_dim)
         }
     }
 #else
-    /* set up matrix for single processor */
+    /* set up matrix for single processor:
+       only main and upper-main diagonals needed */
     for (i = 0; i < A->diags[2].len; ++i) {
         A->diags[2].data[i] = I_DIAG;
     }
@@ -158,58 +159,91 @@ void init_v(vector *v, int dim, double delta, double coord[2][2],
                 return;
             }
 
-            v->data[row_index] =
-                d_squared
-                * src_dens_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)),
-                                   coord[1][0] + (delta * ((double) j + 1.0)));
+            /* v_{i,j} += \Delta^2 * f_{i,j}  */
+            v->data[row_index] = d_squared;
+            v->data[row_index] *= src_dens_funcPtr(
+                coord[0][0] + (delta * ((double) i + 1.0)),
+                coord[1][0] + (delta * ((double) j + 1.0)));
 
             if (i == 0) {
                 /* left column */
 
                 if (j == 0) {
                     /* bottom row */
+                    /* v_{1,1} += v_{0,1} + v_{1,0} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0], coord[1][0] + delta)
-                        + bound_cond_funcPtr(coord[0][0] + delta, coord[1][0]);
+                        bound_cond_funcPtr(
+                            coord[0][0],
+                            coord[1][0] + delta)
+                        + bound_cond_funcPtr(
+                            coord[0][0] + delta,
+                            coord[1][0]);
                 } else if (j == (dim - 1)) {
                     /* top row */
+                    /* v_{1,j} += v_{0,j} + v_{1,j+1} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * ((double) j + 1.0)))
-                        + bound_cond_funcPtr(coord[0][0] + delta, coord[1][0] + (delta * ((double)j + 2.0)));
+                        bound_cond_funcPtr(
+                            coord[0][0],
+                            coord[1][0] + (delta * ((double) j + 1.0)))
+                        + bound_cond_funcPtr(
+                            coord[0][0] + delta,
+                            coord[1][0] + (delta * ((double) j + 2.0)));
                 } else {
                     /* middle rows */
+                    /* v_{1,N} += v_{0,N} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0], coord[1][0] + (delta * ((double) j + 1.0)));
+                        bound_cond_funcPtr(
+                            coord[0][0],
+                            coord[1][0] + (delta * ((double) j + 1.0)));
                 }
             } else if (i == (dim - 1)) {
                 /* right column */
 
                 if (j == 0) {
                     /* bottom row */
+                    /* v_{N,1} += v_{N+1,1} + v_{N,0} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0])
-                        + bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 2.0)), coord[1][0] + delta);
+                        bound_cond_funcPtr(
+                            coord[0][0] + (delta * ((double) i + 1.0)),
+                            coord[1][0])
+                        + bound_cond_funcPtr(
+                            coord[0][0] + (delta * ((double) i + 2.0)),
+                            coord[1][0] + delta);
                 } else if (j == (dim - 1)) {
                     /* top row */
+                    /* v_{N,N} += v_{N+1,1} + v_{N,N+1} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 2.0)), coord[1][0] + (delta * ((double) j + 1.0)))
-                        + bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0] + (delta * ((double) j + 2.0)));
+                        bound_cond_funcPtr(
+                            coord[0][0] + (delta * ((double) i + 2.0)),
+                            coord[1][0] + (delta * ((double) j + 1.0)))
+                        + bound_cond_funcPtr(
+                            coord[0][0] + (delta * ((double) i + 1.0)),
+                            coord[1][0] + (delta * ((double) j + 2.0)));
                 } else {
                     /* middle rows */
+                    /* v_{i,j} += v_{i+1,j} + v_{i,j+1} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 2.0)), coord[1][0] + (delta * ((double) j + 1.0)));
+                        bound_cond_funcPtr(
+                            coord[0][0] + (delta * ((double) i + 2.0)),
+                            coord[1][0] + (delta * ((double) j + 1.0)));
                 }
             } else {
                 /* middle column */
 
                 if (j == 0) {
                     /* bottom row */
+                    /* v_{i,1} += v_{i,0} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0]);
+                        bound_cond_funcPtr(
+                            coord[0][0] + (delta * ((double) i + 1.0)),
+                            coord[1][0]);
                 } else if (j == (dim - 1)) {
                     /* top row */
+                    /* v_{i,N} += v_{i,N} */
                     v->data[row_index] +=
-                        bound_cond_funcPtr(coord[0][0] + (delta * ((double) i + 1.0)), coord[1][0] + (delta * ((double) j + 2.0)));
+                        bound_cond_funcPtr(
+                            coord[0][0] + (delta * ((double) i + 1.0)),
+                            coord[1][0] + (delta * ((double) j + 2.0)));
                 }
             }
 
