@@ -18,6 +18,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "cl.h"
 #include "error.h"
@@ -73,4 +74,6 @@ int print_surface(vector *vec, int dim, double (*bound_cond_funcPtr)(double, dou
     }
     fprintf(input, "%f,%f,%f\n\n", globalArgs.x1, globalArgs.y1,
             bound_cond_funcPtr(globalArgs.x1, globalArgs.y1));
+
+    return EXIT_SUCCESS;
 }

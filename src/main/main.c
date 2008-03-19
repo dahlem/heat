@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
         status = conjugate(&A, &v, &u, &x_bar, globalArgs.e);
     }
 
+    vector_print(&x_bar);
+
     /* print the vector into a gnuplot format */
     if (status == 0) {
         status = print_surface(&x_bar, globalArgs.s - 2, *bound_cond);
