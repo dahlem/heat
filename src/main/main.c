@@ -10,7 +10,7 @@
 
 /** @file main.c
  * The main file of the pde solver for the poisson equation
- * \f$ \Delta^2u = -f \f$ with \f$ u \equiv u(x,y) \f$ on the square region
+ * \f$ \bigtriangledown^2u = -f \f$ with \f$ u \equiv u(x,y) \f$ on the square region
  * \f$ ABCD, A=(-0.5, -2), B=(2, -2), C=(2, 0.5), D=(-0.5, 0.5) \f$, where the
  * source density is given by
  * \f$ f(x,y) = 4\cos{x+y}\sin{x-y} \f$.

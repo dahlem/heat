@@ -8,22 +8,21 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file util.c
- * Implementation of the method declarations in util.h.
+/** @file error.c
+ * Implementation of the method declarations in error.h.
  *
  * @author Dominik Dahlem
  */
-#include "util.h"
+#include "error.h"
 #include "vector.h"
 
 
 
-void gatherErrors(vector *x_bar, vector *x, vector **x_error)
+void error(vector *x_bar, vector *x, vector *error)
 {
-    double elem;
-    size_t i;
-
-    vector_alloc(*x_error, x_bar->len);
-    vector_copy(*x_error, x);
-    gsl_vector_sub(*x_error, x_bar);
+    vector_alloc(error, x->len);
+    vector_copy(error, x);
+    scale(-1.0, error);
+    add(error, x_bar);
+    vector_abs(error);
 }

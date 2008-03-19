@@ -8,10 +8,9 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-AC_INIT([563 - Assignment 2],
-        [0.2],
-        [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie], 
-        [563_pde_conj_grad])
+AC_INIT([563_pde_poisson],
+        [0.5],
+        [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie])
 
 
 AC_CONFIG_AUX_DIR(config)
@@ -50,7 +49,7 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_LIB([m],[sqrt])
+AC_CHECK_FUNCS([sqrt])
 
 # GSL library checks
 # enable gsl?
@@ -127,7 +126,7 @@ DX_RTF_FEATURE([OFF])
 DX_XML_FEATURE([OFF])
 DX_PDF_FEATURE([OFF])
 DX_PS_FEATURE([OFF])
-DX_INIT_DOXYGEN([PDE-Solver], [Doxyfile], [doc/doxygen])
+DX_INIT_DOXYGEN([Poisson-Solver], [Doxyfile], [doc/doxygen])
 
 
 AC_CONFIG_FILES([
@@ -143,8 +142,8 @@ AC_CONFIG_FILES([
    test/common/Makefile
 ])
 
-
 AC_OUTPUT
+
 
 for top_builddir in . .. ../.. $ac_auxdir $ac_auxdir/..; do
   test -f $top_builddir/configure && break
@@ -152,7 +151,7 @@ done
 
 AC_MSG_RESULT([
 
-pde_conj_grad $VERSION: Automatic configuration OK.
+$PACKAGE_NAME $VERSION: Automatic configuration OK.
 
 Type 'make' to compile this project.
 

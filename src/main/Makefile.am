@@ -13,6 +13,7 @@ bin_PROGRAMS = pdepoiss_solv
 pdepoiss_solv_SOURCES =                                               \
 	gnuplot.c                                                     \
 	main.c                                                        \
+	stats.c                                                       \
 	cl.c
 
 pdepoiss_solv_CPPFLAGS =                                              \

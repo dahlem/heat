@@ -8,32 +8,18 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file conjugate.h
- * Declaration of the methods for the Conjugate gradient algorithm.
+/** @file error.h
+ * Declaration of a method to calculate the error between two vectors.
  *
  * @author Dominik Dahlem
  */
-#ifndef __CONJUGATE_H__
-#define __CONJUGATE_H__
+#ifndef __ERROR_H__
+#define __ERROR_H__
+
+#include "error.h"
 
 
-#include "matrix.h"
-#include "vector.h"
-
-
-/** @fn int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
- *
- * This method solves the linear system with the Conjugate Gradient method.
- *
- * @param matrix* the matrix A
- * @param vector* the vector b
- * @param vector* the vector x
- * @param vector* the solution vector x_bar
- * @param double the error threshold
- * @return 0, if success. Otherwise the error code.
- */
-int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres);
-
+void error(vector *x_bar, vector *x, vector *error);
 
 
 #endif

@@ -27,12 +27,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "matrix.h"
 #include "conjugate.h"
 #include "error.h"
+#include "matrix.h"
 #include "mult.h"
 #include "vector.h"
-
 
 
 int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)

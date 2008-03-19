@@ -101,6 +101,13 @@ int add(const vector *x, const vector *const y);
  */
 void scale(double alpha, const vector *x);
 
+/** @fn void vector_abs(const vector *x)
+ * Take the element-wise absolute value of a given vector.
+ *
+ * @param const vector * the vector to apply element-wise @code abs() to
+ */
+void vector_abs(const vector *x);
+
 /** @fn void vector_copy(const vector *x, const vector *const y)
  * This function copies vector y into vector x, whereby vector x
  * has to be of larger or equal length to vector y.

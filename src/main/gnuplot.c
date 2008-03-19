@@ -39,7 +39,7 @@ int print_surface(vector *vec, int dim, double (*bound_cond_funcPtr)(double, dou
 {
     int i, j;
     FILE *input;
-    double x, y, z;
+    double x, y, z, error;
     double *global_buf;
 
 #ifdef HAVE_MPI
@@ -75,43 +75,44 @@ int print_surface(vector *vec, int dim, double (*bound_cond_funcPtr)(double, dou
         }
 
         /* boundary conditions */
-        fprintf(input, "%f,%f,%f\n", globalArgs.x0, globalArgs.y0,
+        fprintf(input, "%f,%f,%f,0.0\n", globalArgs.x0, globalArgs.y0,
                 bound_cond_funcPtr(globalArgs.x0, globalArgs.y0));
         for (j = 0; j < dim; ++j) {
             y = globalArgs.y0 + (j + 1) * globalArgs.d;
             z = bound_cond_funcPtr(globalArgs.x0, y);
-            fprintf(input, "%f,%f,%f\n", globalArgs.x0, y, z);
+            fprintf(input, "%f,%f,%f,0.0\n", globalArgs.x0, y, z);
         }
-        fprintf(input, "%f,%f,%f\n\n", globalArgs.x0, globalArgs.y1,
+        fprintf(input, "%f,%f,%f,0.0\n\n", globalArgs.x0, globalArgs.y1,
                 bound_cond_funcPtr(globalArgs.x0, globalArgs.y1));
 
         for (i = 0; i < dim; ++i) {
             x = globalArgs.x0 + (i + 1) * globalArgs.d;
+            z = bound_cond_funcPtr(x, globalArgs.y0);
 
             /* boundary conditions */
-            fprintf(input, "%f,%f,%f\n", x, globalArgs.y0,
-                    bound_cond_funcPtr(x, globalArgs.y0));
+            fprintf(input, "%f,%f,%f,0.0\n", x, globalArgs.y0, z);
 
             for (j = 0; j < dim; ++j) {
                 y = globalArgs.y0 + (j + 1) * globalArgs.d;
                 z = global_buf[i * dim + j];
-                fprintf(input, "%f,%f,%f\n", x, y, z);
+                fprintf(input, "%f,%f,%f,%f\n", x, y, z,
+                        fabs(z - bound_cond_funcPtr(x, y)));
             }
 
             /* boundary conditions */
-            fprintf(input, "%f,%f,%f\n\n", x, globalArgs.y1,
+            fprintf(input, "%f,%f,%f,0.0\n\n", x, globalArgs.y1,
                     bound_cond_funcPtr(x, globalArgs.y1));
         }
 
         /* boundary conditions */
-        fprintf(input, "%f,%f,%f\n", globalArgs.x1, globalArgs.y0,
+        fprintf(input, "%f,%f,%f,0.0\n", globalArgs.x1, globalArgs.y0,
                 bound_cond_funcPtr(globalArgs.x1, globalArgs.y0));
         for (j = 0; j < dim; ++j) {
             y = globalArgs.y0 + (j + 1) * globalArgs.d;
             z = bound_cond_funcPtr(globalArgs.x1, y);
-            fprintf(input, "%f,%f,%f\n", globalArgs.x1, y, z);
+            fprintf(input, "%f,%f,%f,0.0\n", globalArgs.x1, y, z);
         }
-        fprintf(input, "%f,%f,%f\n\n", globalArgs.x1, globalArgs.y1,
+        fprintf(input, "%f,%f,%f,0.0\n\n", globalArgs.x1, globalArgs.y1,
                 bound_cond_funcPtr(globalArgs.x1, globalArgs.y1));
 
         /* close the file */

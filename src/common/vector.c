@@ -39,12 +39,20 @@ void vector_alloc(vector *vec, int len)
 {
     vec->len = len;
     vec->data = malloc(sizeof(double) * len);
+
+#ifdef NDEBUG
+    assert(vec->data != NULL);
+#endif /* NDEBUG */
 }
 
 void vector_calloc(vector *vec, int len)
 {
     vec->len = len;
     vec->data = calloc(len, sizeof(double));
+
+#ifdef NDEBUG
+    assert(vec->data != NULL);
+#endif /* NDEBUG */
 }
 
 void vector_free(vector *vec)
@@ -95,6 +103,10 @@ void daxpy(double alpha, const vector *const x, const vector *y)
 {
     int i;
 
+#ifdef NDEBUG
+    assert(x->len == y->len);
+#endif /* NDEBUG */
+
     for (i = 0; i < x->len; ++i) {
         y->data[i] = alpha * x->data[i] + y->data[i];
     }
@@ -118,6 +130,10 @@ int add(const vector *x, const vector *const y)
 {
     int i;
 
+#ifdef NDEBUG
+    assert(x->len != y->len);
+#endif /* NDEBUG */
+
     if (x->len != y->len) {
         return VECTOR_DIMENSION_MISMATCH;
     }
@@ -135,6 +151,15 @@ void scale(double alpha, const vector *x)
 
     for (i = 0; i < x->len; ++i) {
         x->data[i] *= alpha;
+    }
+}
+
+void vector_abs(const vector *x)
+{
+    int i;
+
+    for (i = 0; i < x->len; ++i) {
+        x->data[i] = abs(x->data[i]);
     }
 }
 
