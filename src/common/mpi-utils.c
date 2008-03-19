@@ -8,30 +8,24 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file mpi-common.c
- * This file implements the method declarations in the mpi-common.h header.
+/** @file mpi-utils.c
+ * Implementation of the methods declared in mpi-utils.h
  *
  * @author Dominik Dahlem
  */
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_MPI
-# include <mpi.h>
-#endif /* HAVE_MPI */
-
-#include "mpi-common.h"
+#include "mpi-utils.h"
 
 
-void setup(int *argc, char **argv[])
+int adjustment(int sys_dim, int num_tasks)
 {
-    MPI_Init(argc, argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &mpiArgs.rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &mpiArgs.num_tasks);
+    return sys_dim % num_tasks;
 }
 
-void finalise()
+int block(int sys_dim, int num_tasks)
 {
-    MPI_Finalize();
+    int adjust;
+
+    adjust = adjustment(sys_dim, num_tasks);
+    
+    return ((sys_dim + adjust) / num_tasks);
 }

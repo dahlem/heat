@@ -8,30 +8,18 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-/** @file mpi-common.c
- * This file implements the method declarations in the mpi-common.h header.
+/** @file mpi-utils.h
+ * Declaration of some utility functions relevant for the parallel version of
+ * the solver using MPI.
  *
  * @author Dominik Dahlem
  */
-#if HAVE_CONFIG_H
-# include <config.h>
+#ifndef __MPI_UTILS_H__
+#define __MPI_UTILS_H__
+
+
+int adjustment(int sys_dim, int num_tasks);
+int block(int sys_dim, int num_tasks);
+
+
 #endif
-
-#ifdef HAVE_MPI
-# include <mpi.h>
-#endif /* HAVE_MPI */
-
-#include "mpi-common.h"
-
-
-void setup(int *argc, char **argv[])
-{
-    MPI_Init(argc, argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &mpiArgs.rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &mpiArgs.num_tasks);
-}
-
-void finalise()
-{
-    MPI_Finalize();
-}
