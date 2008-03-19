@@ -7,6 +7,14 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+
+/** @file conjugate.c
+ * Implementation of the method declarations in conjugate.h. The conjugate gradient
+ * method supports both serial and parallel execution. However, the MPI communication
+ * is implemented in the respective matrix-vector product and dot product functions.
+ *
+ * @author Dominik Dahlem
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -33,7 +41,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
     size_t k;
     double error, dotprod, alpha, beta, norm;
     int maxCount;
-    
+
     if (b->len != A->diags[0].len) {
         return MATRIX_VECTOR_UNEQUAL_ROW_DIM;
     }
@@ -79,7 +87,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
         /* \f$ \alpha = (r' * r)/(p' * v)  \f$ */
         dotprod = dotProduct(&p, &temp);
         alpha = error / dotprod;
-        
+
         /* \f$ x = x + \alpha * p   \f$ */
         daxpy(alpha, &p, x_bar);
 
@@ -89,7 +97,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
         /* \f$ \beta = (new_r' * new_r)/(r' * r) \f$ */
         norm = dnrm2(&r);
         beta = (norm * norm) / error;
-        
+
         /* \f$ p = new_r + \beta * p  \f$ */
         vector_copy(&temp, &p);
         scale(beta, &temp);
@@ -105,6 +113,6 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
     vector_free(&temp);
     vector_free(&p);
     vector_free(&r);
-    
+
     return EXIT_SUCCESS;
 }

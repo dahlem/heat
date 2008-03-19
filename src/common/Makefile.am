@@ -15,6 +15,7 @@ libcommon_la_SOURCES =                                                \
 	vector.c                                                      \
 	matrix.c                                                      \
 	mult.c                                                        \
+	mpi-utils.c                                                   \
 	mpi-common.c
 else
 libcommon_la_SOURCES =                                                \

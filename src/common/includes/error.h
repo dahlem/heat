@@ -42,6 +42,12 @@
  */
 #define FILE_OPEN_FOR_WRITE_ERROR       14
 
+/** @def MALLOC_ERROR
+ * Error code if a malloc error occurred (i.e., the memory could not be
+ * allocated).
+ */
+#define MALLOC_ERROR                    15
+
 /** @}*/
 
 

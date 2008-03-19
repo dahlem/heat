@@ -7,6 +7,12 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+
+/** @file cl.c
+ * This file implements the command-line parsing as specified in the cl.h header file.
+ *
+ * @author Dominik Dahlem
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

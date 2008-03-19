@@ -7,6 +7,18 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+
+/** @file main.c
+ * The main file of the pde solver for the poisson equation
+ * \f$ \Delta^2u = -f \f$ with \f$ u \equiv u(x,y) \f$ on the square region
+ * \f$ ABCD, A=(-0.5, -2), B=(2, -2), C=(2, 0.5), D=(-0.5, 0.5) \f$, where the
+ * source density is given by
+ * \f$ f(x,y) = 4\cos{x+y}\sin{x-y} \f$.
+ * The exact solution and boundary conditions are given by the formula
+ * \f$ u = \cos{x+y}\sin{x-y} \f$.
+ *
+ * @author Dominik Dahlem
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -29,8 +41,29 @@
 #include "vector.h"
 
 
+/** @fn void print_settings()
+ * Print the settings of the current application run.
+ */
 void print_settings();
+
+/** @fn double src_dens(double x, double y)
+ * This function declares the source density
+ * \f$ f(x,y) = 4\cos{x+y}\sin{x-y} \f$.
+ *
+ * @param double the x-value
+ * @param double the y-value
+ * @return the value of the function at the given points.
+ */
 double src_dens(double x, double y);
+
+/** @fn double bound_cond(double x, double y)
+ * This function declares the boundary condition given by
+ * \f$ u = \cos{x+y}\sin{x-y} \f$.
+ *
+ * @param double the x-value
+ * @param double the y-value
+ * @return the value of the function at the given points.
+ */
 double bound_cond(double x, double y);
 
 
@@ -79,8 +112,6 @@ int main(int argc, char *argv[])
     if (status == 0) {
         status = conjugate(&A, &v, &u, &x_bar, globalArgs.e);
     }
-
-    vector_print(&x_bar);
 
     /* print the vector into a gnuplot format */
     if (status == 0) {

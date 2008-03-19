@@ -1,4 +1,5 @@
 /pdepoiss_solv
 /pdepoiss_solv-cl.o
+/pdepoiss_solv-gnuplot.o
 /pdepoiss_solv-main.o
 /pdepoiss_solv-mpi-common.o

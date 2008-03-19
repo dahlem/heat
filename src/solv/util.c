@@ -8,6 +8,11 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
+/** @file util.c
+ * Implementation of the method declarations in util.h.
+ *
+ * @author Dominik Dahlem
+ */
 #include "util.h"
 #include "vector.h"
 

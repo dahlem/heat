@@ -7,6 +7,15 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+
+/** @file mult.c
+ * Implementation of the method declarations in mult.h. The dgbmv method supports
+ * the parallel calculation of the matrix-vector product. This method expects the
+ * matrix to be in the general band format, which can be set in the matrix structure
+ * declared in matrix.h.
+ *
+ * @author Dominik Dahlem
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif

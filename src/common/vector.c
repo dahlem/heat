@@ -7,6 +7,13 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+
+/** @file vector.c
+ * Implementation of the method declarations in vector.h. The dot product supports
+ * the parallel calculation of the dot product in an MPI environment.
+ *
+ * @author Dominik Dahlem
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -67,9 +74,9 @@ double dotProduct(const vector *const a, const vector *const b)
     /* check the assumption that both vectors have the same size */
     assert(a->len == b->len);
 #endif /* NDEBUG */
-    
+
     result = 0.0;
-    
+
     for (i = 0; i < a->len; ++i) {
         result += a->data[i] * b->data[i];
     }
@@ -99,7 +106,7 @@ double dnrm2(const vector *const x)
     double result;
 
     result = 0.0;
-    
+
     for (i = 0; i < x->len; ++i) {
         result += (x->data[i] * x->data[i]);
     }
@@ -114,7 +121,7 @@ int add(const vector *x, const vector *const y)
     if (x->len != y->len) {
         return VECTOR_DIMENSION_MISMATCH;
     }
-    
+
     for (i = 0; i < x->len; ++i) {
         x->data[i] += y->data[i];
     }
@@ -122,7 +129,7 @@ int add(const vector *x, const vector *const y)
     return EXIT_SUCCESS;
 }
 
-void scale(double alpha, const vector *x) 
+void scale(double alpha, const vector *x)
 {
     int i;
 
@@ -136,7 +143,7 @@ void vector_copy(const vector *x, const vector *const y)
 #ifdef NDEBUG
     assert(x->len >= y->len);
 #endif /* NDEBUG */
-    
+
     memcpy(x->data, y->data, y->len * sizeof(double));
 }
 
@@ -151,7 +158,7 @@ void vector_print(const vector *const x)
             fprintf(stdout, "%2.2f, ", x->data[i]);
         }
     }
-    
+
     fprintf(stdout, "\n");
     fflush(stdout);
 }

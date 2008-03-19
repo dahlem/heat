@@ -7,6 +7,19 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+
+/** @file poiss_2d.c
+ * Implementation of the method declarations in poiss_2d.h. In order to initialise
+ * the matrix and vectors in an MPI environment the global row/column offsets have
+ * to be taken into account, because each processor is responsible to set up its
+ * partial matrix and vector structures. There is no initial communication between
+ * the processes to set up any vector to avoid a huge communication overhead or
+ * requiring a single processor to hold the global structures as this might stretch
+ * the local resources available.
+ *
+ * @see poiss_2d.h
+ * @author Dominik Dahlem
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -14,6 +27,7 @@
 #ifdef HAVE_MPI
 # include <mpi.h>
 # include "mpi-common.h"
+# include "mpi-utils.h"
 #endif /* HAVE_MPI */
 
 #include <math.h>
@@ -36,8 +50,8 @@ void init_matrix(matrix *A, int block_matrix_dim)
     int rows;
 
     system_dim = block_matrix_dim * block_matrix_dim;
-    row_adjust = system_dim % mpiArgs.num_tasks;
-    rows = (system_dim + row_adjust) / mpiArgs.num_tasks;
+    row_adjust = adjustment(system_dim, mpiArgs.num_tasks);
+    rows = block(system_dim, mpiArgs.num_tasks);
 
     /* the diagonals have equal lengths */
     len = A->diags[0].len;
@@ -122,9 +136,12 @@ void init_v(vector *v, int dim, double delta, double coord[2][2],
     int i, j;                   /* v-indeces; adjusted in the MPI case */
     int row_offset, col_offset; /* starting point for the v-indeces */
     int sys_dim;                /* system dimension */
-    int row_adjust;             /* adjust for unequal row-decompositioning */
     int row_index;              /* row index for the v-vector */
     int row_block;              /* number of rows responsible */
+
+#ifdef HAVE_MPI
+    int row_adjust;             /* adjust for unequal row-decompositioning */
+#endif
 
     d_squared = delta * delta;
     sys_dim = dim * dim;
@@ -132,17 +149,16 @@ void init_v(vector *v, int dim, double delta, double coord[2][2],
     cols = dim;
 
 #ifdef HAVE_MPI
-    row_adjust = sys_dim % mpiArgs.num_tasks;
+    row_adjust = adjustment(sys_dim, mpiArgs.num_tasks);
     row_offset = (double) dim / (double) mpiArgs.num_tasks * (double) mpiArgs.rank;
     rows = MIN(ceil((double) (mpiArgs.rank + 1) * (double) dim
                     / (double) mpiArgs.num_tasks),
                dim);
-    row_block = ((sys_dim + row_adjust) / mpiArgs.num_tasks);
+    row_block = block(sys_dim, mpiArgs.num_tasks);
     col_offset = (mpiArgs.rank * row_block) % dim;
 #else
     row_offset = 0;
     rows = sys_dim;
-    row_adjust = 0;
     row_block = sys_dim;
     col_offset = 0;
 #endif /* HAVE_MPI */
@@ -284,9 +300,9 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim,
     index[3] = 1;
     index[4] = block_matrix_dim;
 
-    row_adjust = system_dim % mpiArgs.num_tasks;
+    row_adjust = adjustment(system_dim, mpiArgs.num_tasks);
+    rows = block(system_dim, mpiArgs.num_tasks);
     num_diags = POISS_2D_GB_MATRIX_DIAGS;
-    rows = (system_dim + row_adjust) / mpiArgs.num_tasks;
     col_offset = mpiArgs.rank * rows;
 
     for (i = 0; i < num_diags; ++i) {

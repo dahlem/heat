@@ -3,6 +3,8 @@
 /libcommon_la-matrix.o
 /libcommon_la-mpi-common.lo
 /libcommon_la-mpi-common.o
+/libcommon_la-mpi-utils.lo
+/libcommon_la-mpi-utils.o
 /libcommon_la-mult.lo
 /libcommon_la-mult.o
 /libcommon_la-vector.lo
