@@ -117,7 +117,6 @@ void init_v(vector *v, int dim, double delta, double coord[2][2],
             double (*src_dens_funcPtr)(double, double),
             double (*bound_cond_funcPtr)(double, double))
 {
-    double north, east, south, west;
     double d_squared;           /* delta^2 */
     double rows, cols;          /* max rows and cols; adjusted in the MPI case */
     int i, j;                   /* v-indeces; adjusted in the MPI case */
