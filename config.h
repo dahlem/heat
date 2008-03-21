@@ -54,7 +54,7 @@
 #define HAVE_UNISTD_H 1
 
 /* define debugging, if enabled */
-#define NDEBUG 1
+/* #undef NDEBUG */
 
 /* Name of package */
 #define PACKAGE "563_pde_poisson"
