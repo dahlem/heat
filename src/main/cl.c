@@ -116,8 +116,6 @@ int process_cl(int argc, char **argv)
     opt = getopt(argc, argv, cl_arguments);
 
     while (opt != -1) {
-        printf("process option %c\n", opt);
-
         switch (opt) {
             case 't':
                 globalArgs.t = atoi(optarg);

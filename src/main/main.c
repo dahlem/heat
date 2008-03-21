@@ -162,7 +162,7 @@ void print_settings()
         fprintf(stdout, "(2) Mesh settings\n");
         fprintf(stdout, "Space Dimension  : %d\n", globalArgs.s);
         fprintf(stdout, "Time Dimension   : %d\n", globalArgs.t);
-        fprintf(stdout, "Delta            : %1.4f\n", globalArgs.d);
+        fprintf(stdout, "Delta            : %1.8f\n", globalArgs.d);
         fprintf(stdout, "Input Range      : %2.2f <= x <= %2.2f; %2.2f <= y <= %2.2f\n\n",
                 globalArgs.x0, globalArgs.x1, globalArgs.y0, globalArgs.y1);
 
