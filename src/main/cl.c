@@ -13,6 +13,7 @@
  *
  * @author Dominik Dahlem
  */
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -25,15 +26,16 @@
  * getopt configuration of the command-line parameters.
  * All command-line arguments are optional.
  */
-static const char *cl_arguments = "uh?s:t:r:1:2:3:4:f:";
+static const char *cl_arguments = "uh?s:t:d:r:1:2:3:4:f:";
 
 
 
 void displayHelp()
 {
     printf("pdepoiss_solv - solve Poisson's equation.\n");
-    printf(" -s : Space dimension.\n");
-    printf(" -t : Time dimension.\n");
+    printf(" -s : Space dimension (Note: specify grid dimensions or the delta value).\n");
+    printf(" -t : Time dimension (Note: specify grid dimensions or the delta value).\n");
+    printf(" -d : Delta value (Note: specify grid dimensions or the delta value).\n");
     printf(" -r : Error threshold.\n");
     printf(" -f : File name for the result surface.\n");
     printf(" -1 : Lower bound of the range in the x dimension.\n");
@@ -51,6 +53,7 @@ void init()
 {
     globalArgs.s = DEFAULT_SPACE_DIMENSION;
     globalArgs.t = DEFAULT_TIME_DIMENSION;
+    globalArgs.d = DEFAULT_DELTA;
     globalArgs.e = DEFAULT_ERROR;
     globalArgs.f = DEFAULT_FILENAME;
     globalArgs.x0 = DEFAULT_X0;
@@ -100,6 +103,13 @@ Use the default threshold instead.\n");
         return GRID_DIM_MISMATCH;
     }
 
+    /* grid dimensions take precedence over delta value configuration */
+    if ((globalArgs.s == DEFAULT_SPACE_DIMENSION)
+        && (globalArgs.t == DEFAULT_TIME_DIMENSION)) {
+        globalArgs.s = globalArgs.t = round(((globalArgs.x1 - globalArgs.x0)
+                                             / globalArgs.d) + 1);
+    }
+
     /* derive the delta value which we assume is equal in both grid dimensions. */
     globalArgs.d = (globalArgs.x1 - globalArgs.x0) / (globalArgs.s - 1);
 
@@ -125,6 +135,9 @@ int process_cl(int argc, char **argv)
                 break;
             case 'r':
                 globalArgs.e = atof(optarg);
+                break;
+            case 'd':
+                globalArgs.d = atof(optarg);
                 break;
             case 'f':
                 globalArgs.f = optarg;

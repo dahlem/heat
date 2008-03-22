@@ -31,6 +31,11 @@
  */
 #define DEFAULT_TIME_DIMENSION 26
 
+/** @define DEFAULT_DELTA
+ * Default delta value
+ */
+#define DEFAULT_DELTA 0.1
+
 /** @define DEFAULT_ERROR
  * Default error threshold
  */

@@ -24,6 +24,7 @@ pdepoiss_solv_CPPFLAGS =                                              \
 
 
 LDADD =                                                               \
+	-lm                                                           \
 	$(top_srcdir)/src/solv/libsolvers.la                          \
 	$(top_srcdir)/src/poiss/2d/libpoiss2d.la                      \
 	$(top_srcdir)/src/common/libcommon.la
