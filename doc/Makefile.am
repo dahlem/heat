@@ -7,17 +7,11 @@
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-if GCOV
-
-lcov: 
-	for i in $(SUBDIRS); do \
-		cd $$i && $(MAKE) $(AM_MAKEFLAGS) lcov && cd ..; \
-	done
-
-else
-lcov: ;
-
-endif
 
 
-.PHONY: lcov
+SUBDIRS = report
+
+dist_doc_DATA =                                             \
+	eval                                                \
+	doxygen
+

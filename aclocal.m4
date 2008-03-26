@@ -7771,5 +7771,8 @@ AC_MSG_RESULT([$SED])
 
 m4_include([m4/ac_gcov.m4])
 m4_include([m4/ac_perl_module_version.m4])
+m4_include([m4/ac_prog_dvips.m4])
+m4_include([m4/ac_prog_latex.m4])
+m4_include([m4/ac_prog_ps2pdf.m4])
 m4_include([m4/acx_mpi.m4])
 m4_include([m4/ax_prog_doxygen.m4])

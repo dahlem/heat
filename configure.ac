@@ -20,7 +20,7 @@ AC_CONFIG_HEADER([config.h])
 # extra autoconf macros
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([-W -Wall foreign])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -29,8 +29,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-
-CFLAGS="-W -Wall -pedantic ${CFLAGS}"
 
 LF_CONFIGURE_CC
 LF_HOST_TYPE
@@ -55,7 +53,7 @@ AC_CHECK_FUNCS([sqrt])
 # enable gsl?
 AC_ARG_ENABLE(gsl, AS_HELP_STRING(
 		     [--enable-gsl], 
-		     [enable test @<:@default=no@:>@]), 
+		     [enable the GSL library @<:@default=no@:>@]), 
 		     [GSLLIB=$enableval], [GSLLIB=no])
 
 if test x$GSLLIB = xyes; then
@@ -112,8 +110,21 @@ if test "x$DEBUGGING" = xyes; then
   AC_DEFINE(NDEBUG, 1, [define debugging, if enabled])
 fi
 
+# enable report generation
+AC_ARG_ENABLE(report, AS_HELP_STRING(
+                     [--enable-report],
+                     [enable report generation @<:@default=no@:>@]), 
+                     [REPORT=$enableval], [REPORT=no])
 
-# optional libraries
+# Check for latex stuff
+if test x$REPORT = xyes; then
+  AC_PROG_LATEX
+  AC_PROG_DVIPS
+  AC_PROG_PS2PDF
+fi
+AM_CONDITIONAL(GEN_REPORT, test "x$REPORT" = xyes)
+
+
 AC_GCOV
 
 
@@ -131,6 +142,8 @@ DX_INIT_DOXYGEN([Poisson-Solver], [Doxyfile], [doc/doxygen])
 
 AC_CONFIG_FILES([
    Makefile
+   doc/Makefile
+   doc/report/Makefile
    src/Makefile
    src/common/Makefile
    src/poiss/Makefile

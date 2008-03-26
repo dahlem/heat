@@ -3,3 +3,4 @@
 /pdepoiss_solv-gnuplot.o
 /pdepoiss_solv-main.o
 /pdepoiss_solv-mpi-common.o
+/pdepoiss_solv-stats.o

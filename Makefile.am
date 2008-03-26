@@ -1,9 +1,9 @@
-# Copyright (C) 2007 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>
-#  
+# Copyright (C) 2008 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>
+#
 # This file is free software; as a special exception the author gives
-# unlimited permission to copy and/or distribute it, with or without 
+# unlimited permission to copy and/or distribute it, with or without
 # modifications, as long as this notice is preserved.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,19 +14,21 @@ include mk/doxygen.am
 
 SUBDIRS = src
 
+# go into test
 if HAVE_CUNIT
 SUBDIRS += test
+endif
+
+# go into doc
+if GEN_REPORT
+SUBDIRS += doc
 endif
 
 
 MAINTAINERCLEANFILES = "configure Makefile.in semantic.cache"
 MOSTLYCLEANFILES = ${DX_CLEANFILES}
 
-dist_doc_DATA =                                             \
-	doc
-
 EXTRA_DIST = \
-	$(srcdir)/report \
 	$(srcdir)/m4/ \
 	$(srcdir)/mk/ \
 	$(srcdir)/poiss.pbs

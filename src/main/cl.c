@@ -38,10 +38,10 @@ void displayHelp()
     printf(" -d : Delta value (Note: specify grid dimensions or the delta value).\n");
     printf(" -r : Error threshold.\n");
     printf(" -f : File name for the result surface.\n");
-    printf(" -1 : Lower bound of the range in the x dimension.\n");
-    printf(" -2 : Upper bound of the range in the x dimension.\n");
-    printf(" -3 : Lower bound of the range in the y dimension.\n");
-    printf(" -4 : Upper bound of the range in the y dimension.\n");
+    printf(" -1 : Lower bound of the domain in the x dimension.\n");
+    printf(" -2 : Upper bound of the domain in the x dimension.\n");
+    printf(" -3 : Lower bound of the domain in the y dimension.\n");
+    printf(" -4 : Upper bound of the domain in the y dimension.\n");
     printf(" -? : This help message.\n");
     printf(" -h : This help message.\n");
 

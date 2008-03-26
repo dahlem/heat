@@ -16,7 +16,7 @@ set key off
 set xlabel "x"
 set ylabel "y"
 
-set title "Exact Solution of the Poisson Equation"
+set title "Exact Solution of Poisson's Equation"
 
 splot cos(x + y) * sin(x - y)
 reset

@@ -7,17 +7,24 @@
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-if GCOV
 
-lcov: 
-	for i in $(SUBDIRS); do \
-		cd $$i && $(MAKE) $(AM_MAKEFLAGS) lcov && cd ..; \
-	done
+report_src = report.tex
 
-else
-lcov: ;
+EXTRA_DIST = $(report_src) report.pdf
 
-endif
+all-local: report.pdf
 
+clean-local:
+	rm -f *.aux *.log *.pdf *.dvi *.ps *.eps
 
-.PHONY: lcov
+dvi-local: report.dvi
+
+report.dvi: $(report_src)
+	$(latex) $<
+	$(latex) $<
+
+%.ps: %.dvi
+	( unset LANG; $(dvips) $< -o $@ || { rm -f $@ ; false; }; )
+
+%.pdf: %.ps
+	( unset LANG; $(ps2pdf) $< $@ || { rm -f $@ ; false; } )
