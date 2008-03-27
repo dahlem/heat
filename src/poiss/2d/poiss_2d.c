@@ -87,15 +87,14 @@ void init_matrix(matrix *A, int block_matrix_dim)
             printf("Initializing matrices with %d threads...\n", nthreads);
         }
 #  endif /* NDEBUG */
+
 #  pragma omp sections nowait
         {
-# endif /* HAVE_OPENMP */
 
         /* set up partial matrix for each processor */
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the first section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
@@ -109,12 +108,9 @@ void init_matrix(matrix *A, int block_matrix_dim)
 
 # ifdef HAVE_OPENMP
             }
-# endif /* HAVE_OPENMP */
-
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the second section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
@@ -132,12 +128,9 @@ void init_matrix(matrix *A, int block_matrix_dim)
 
 # ifdef HAVE_OPENMP
             }
-# endif /* HAVE_OPENMP */
-
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the third section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
@@ -147,12 +140,9 @@ void init_matrix(matrix *A, int block_matrix_dim)
 
 # ifdef HAVE_OPENMP
             }
-# endif /* HAVE_OPENMP */
-
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the fourth section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
@@ -170,12 +160,9 @@ void init_matrix(matrix *A, int block_matrix_dim)
 
 # ifdef HAVE_OPENMP
             }
-# endif /* HAVE_OPENMP */
-
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the fifth section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
@@ -202,6 +189,7 @@ void init_matrix(matrix *A, int block_matrix_dim)
 #   pragma omp parallel shared(A) private(i)
 #  endif /* NDEBUG */
     {
+
 #  ifdef NDEBUG
         nthreads = omp_get_num_threads();
         tid = omp_get_thread_num();
@@ -211,16 +199,14 @@ void init_matrix(matrix *A, int block_matrix_dim)
             printf("Initializing matrices with %d threads...\n", nthreads);
         }
 #  endif /* NDEBUG */
+
 #  pragma omp sections nowait
         {
-# endif /* HAVE_OPENMP */
-
             /* set up matrix for single processor:
                only main and upper-main diagonals needed */
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the first section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
@@ -229,36 +215,31 @@ void init_matrix(matrix *A, int block_matrix_dim)
                 }
 # ifdef HAVE_OPENMP
             }
-# endif /* HAVE_OPENMP */
 
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the second section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
-            for (i = 0; i < A->diags[1].len; ++i) {
-                if (((i + 1) % block_matrix_dim) == 0) {
-                    A->diags[1].data[i] = 0;
-                } else {
-                    A->diags[1].data[i] = D_DIAG_1;
+                for (i = 0; i < A->diags[1].len; ++i) {
+                    if (((i + 1) % block_matrix_dim) == 0) {
+                        A->diags[1].data[i] = 0;
+                    } else {
+                        A->diags[1].data[i] = D_DIAG_1;
+                    }
                 }
-            }
 # ifdef HAVE_OPENMP
             }
-# endif /* HAVE_OPENMP */
-
-# ifdef HAVE_OPENMP
 #  pragma omp section
-#  ifdef NDEBUG
             {
+#  ifdef NDEBUG
                 printf("Thread %d executes the third section\n", tid);
 #  endif /* NDEBUG */
 # endif /* HAVE_OPENMP */
-            for (i = 0; i < A->diags[0].len; ++i) {
-                A->diags[0].data[i] = D_MAIN_DIAG;
-            }
+                for (i = 0; i < A->diags[0].len; ++i) {
+                    A->diags[0].data[i] = D_MAIN_DIAG;
+                }
 # ifdef HAVE_OPENMP
             } /* end last section */
         } /* end of sections */

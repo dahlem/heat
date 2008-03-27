@@ -162,7 +162,7 @@ void print_settings()
         fprintf(stdout, "Max number of Threads : %d\n", omp_get_max_threads());
         fprintf(stdout, "Support Nesting (0/1) : %d\n\n", omp_get_nested());
 #else
-        fprintf(stdout, "OpenMP                : false\n\n");
+        fprintf(stdout, "OpenMP                : false\n");
 #endif /* HAVE_OPENMP */
 
 #ifdef NDEBUG
