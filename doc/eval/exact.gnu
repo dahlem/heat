@@ -1,5 +1,5 @@
 set terminal postscript eps enhanced colour solid rounded
-set output 'real.eps'
+set output 'exact.eps'
 
 # change the angle the plot is shown
 set view 60, 30, 1, 1
@@ -13,10 +13,8 @@ set xrange [-0.5:2]
 set grid
 set key off
 
-set xlabel "x"
-set ylabel "y"
-
-set title "Exact Solution of Poisson's Equation"
+set xlabel "X"
+set ylabel "Y"
 
 splot cos(x + y) * sin(x - y)
 reset

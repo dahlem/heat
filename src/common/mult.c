@@ -32,6 +32,10 @@
 # include "mpi-common.h"
 #endif /* HAVE_MPI */
 
+#ifdef HAVE_OPENMP
+# include <omp.h>
+#endif /* HAVE_OPENMP */
+
 #include "matrix.h"
 #include "mult.h"
 #include "vector.h"
@@ -42,6 +46,9 @@ void dcdssbmv(const matrix *const mat, const vector *const u, const vector *v)
     int i, j;
     int p;
 
+#ifdef HAVE_OPENMP
+# pragma omp parallel for shared(v) private(i, j, p)
+#endif /* HAVE_OPENMP */
     for (i = 0; i < mat->diags[0].len; ++i) {
         /* 1. main diagonal part */
         v->data[i] = mat->diags[0].data[i] * u->data[i];

@@ -10,12 +10,19 @@
 
 report_src = report.tex
 
+report_images =                                                      \
+	images/exact.eps                                             \
+	images/poiss.eps
+
 EXTRA_DIST = $(report_src) report.pdf
 
-all-local: report.pdf
+images/%.eps: ../eval/%.eps
+	( cp $? $@ && rm -f report.dvi; )
+
+all-local: $(report_images) report.pdf
 
 clean-local:
-	rm -f *.aux *.log *.pdf *.dvi *.ps *.eps
+	rm -f *.aux *.log *.pdf *.dvi *.ps
 
 dvi-local: report.dvi
 

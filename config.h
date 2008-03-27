@@ -29,6 +29,9 @@
 /* Define if you have the MPI library. */
 /* #undef HAVE_MPI */
 
+/* Define if OpenMP is enabled */
+#define HAVE_OPENMP 1
+
 /* Define to 1 if you have the `sqrt' function. */
 /* #undef HAVE_SQRT */
 
@@ -54,7 +57,7 @@
 #define HAVE_UNISTD_H 1
 
 /* define debugging, if enabled */
-/* #undef NDEBUG */
+#define NDEBUG 1
 
 /* Name of package */
 #define PACKAGE "563_pde_poisson"

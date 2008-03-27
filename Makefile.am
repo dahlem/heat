@@ -12,16 +12,11 @@ ACLOCAL_AMFLAGS = -I m4 -I /usr/share/aclocal
 include mk/doxygen.am
 
 
-SUBDIRS = src
+SUBDIRS = src doc
 
 # go into test
 if HAVE_CUNIT
 SUBDIRS += test
-endif
-
-# go into doc
-if GEN_REPORT
-SUBDIRS += doc
 endif
 
 

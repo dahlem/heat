@@ -101,6 +101,17 @@ else
 fi
 AM_CONDITIONAL(COMPILE_PARALLEL, test "x$USE_MPI" = xyes)
 
+# Check for OpenMP
+AC_ARG_ENABLE(openmp, AS_HELP_STRING(
+		   [--enable-openmp], 
+		   [enable OpenMP @<:@default=no@:>@]), 
+		   [USE_OPENMP=$enableval], [USE_OPENMP=no])
+if test "x$USE_OPENMP" = xyes; then
+   AX_OPENMP([], [AC_MSG_WARN([cannot configure OpenMP])])
+   CFLAGS="$CFLAGS $OPENMP_CFLAGS"
+fi
+AM_CONDITIONAL(COMPILE_MULTITHREADED, test "x$USE_OPENMP" = xyes)
+
 # Check for debug
 AC_ARG_ENABLE(debug, AS_HELP_STRING(
 		     [--enable-debug], 
@@ -124,6 +135,18 @@ if test x$REPORT = xyes; then
 fi
 AM_CONDITIONAL(GEN_REPORT, test "x$REPORT" = xyes)
 
+# enable plot generation
+AC_ARG_ENABLE(plot, AS_HELP_STRING(
+                     [--enable-plot],
+                     [enable plot generation @<:@default=no@:>@]), 
+                     [PLOT=$enableval], [REPORT=no])
+
+# Check for latex stuff
+if test x$PLOT = xyes; then
+  ACLTX_PROG_GNUPLOT
+fi
+AM_CONDITIONAL(GEN_PLOT, test "x$PLOT" = xyes)
+
 
 AC_GCOV
 
@@ -144,6 +167,7 @@ AC_CONFIG_FILES([
    Makefile
    doc/Makefile
    doc/report/Makefile
+   doc/eval/Makefile
    src/Makefile
    src/common/Makefile
    src/poiss/Makefile

@@ -82,6 +82,7 @@ inter-dependencies which are enforced.
     the functions.
   \item --enable-report : Enable the report generation which is
     written in latex.
+  \item --enable-plot : Enable the plot generation
   \end{itemize}
 \end{itemize}
 
@@ -97,23 +98,39 @@ build those individually.
 \item Installing the application was not considered.
 \item To build the project with MPI support do:
   \begin{enumerate}
-  \item No gcov, no tests, no MPI\\
-    ./configure \\
-    make\\
+  \item No gcov, no tests, no MPI
+\begin{verbatim}
+./configure
+make
+\end{verbatim}
     Compile the sources
-  \item No gcov\\
-    ./configure --enable-test\\
-    make check\\
+  \item No gcov, no tests, MPI enabled
+\begin{verbatim}
+./configure --enable-mpi
+make
+\end{verbatim}
+    Compile the sources for parallel execution
+  \item No gcov
+\begin{verbatim}
+./configure --enable-test
+make check
+\end{verbatim}
     This command will compile everything and run the cunit tests.
-  \item Enable gcov and testing\\
-    ./configure --enable-test --enable-gcov\\
-    make lcov This command will compile everything, run the cunit
-    tests, and generate a snazzy HTML coverage report using lcov
+  \item Enable gcov and testing
+\begin{verbatim}
+./configure --enable-test --enable-gcov
+make lcov
+\end{verbatim}
+    This command will compile everything, run the cunit tests, and
+    generate a snazzy HTML coverage report using lcov
     \footnote{http://ltp.sourceforge.net/coverage/lcov.php}.
-  \item Enable the report generation\\
-    ./configure --enable-report\\
-    make\\
-    This command will compile the c and latex sources.
+  \item Enable the report generation
+\begin{verbatim}
+./configure --enable-report --enable-plot
+make
+\end{verbatim}
+    This command will compile the c, the gnuplot graphs, and the latex
+    sources.
   \end{enumerate}
 \end{itemize}
 
@@ -262,6 +279,17 @@ The exact solution and boundary conditions are given by
   u=\cos(x+y)\sin(x-y)
 \end{equation}
 
+which results in the following graph
+
+\begin{figure}[htb]
+  \centering
+  \psfrag{X}[B][B][1][0]{x}
+  \psfrag{Y}[B][B][1][0]{y}
+  \includegraphics[scale=0.5]{./images/exact.eps}
+  \caption{Exact Solution of Poisson's Equation}
+  \label{fig:exactPoiss}
+\end{figure}
+
 Two simulation runs were performed -- one in serial mode and the other
 one in parallel mode using the Message Passing Interface (MPI) with 16
 configured nodes. Both runs are configured with $\delta=0.01$ which
@@ -281,8 +309,8 @@ analytical solution \prettyref{eq:boundaryCond}.
   \psfrag{ERR}[B][B][1][270]{$\epsilon$}
   \psfrag{PARALLEL}[B][B][1][0]{Parallel}
   \psfrag{SERIAL}[B][B][1][0]{Serial}
-  \includegraphics{./images/poiss-serial.eps}
-  \caption{Approximate Solution of Poisson Equation
+  \includegraphics{./images/poiss.eps}
+  \caption{Approximate Solution of Poisson's Equation
     $\bigtriangledown^{2}u=-f$}
   \label{fig:approxPoiss}
 \end{figure}

@@ -8,14 +8,18 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-SUBDIRS =
+eval_src =                                                           \
+	poiss.gnu                                                    \
+	exact.gnu                                                    \
+	serial.dat                                                   \
+	parallel.dat
 
-if GEN_PLOT
-SUBDIRS += eval
-endif
+EXTRA_DIST = $(eval_src) exact.eps poiss.eps
 
-if GEN_REPORT
-SUBDIRS += report
-endif
+all-local: exact.eps poiss.eps
 
-dist_doc_DATA = doxygen
+clean-local:
+	rm -f *.eps
+
+%.eps: $(eval_src)
+	( $(gnuplot) $*.gnu || { rm -f $@ ; false; }; )
