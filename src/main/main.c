@@ -28,6 +28,10 @@
 # include "mpi-common.h"
 #endif /* HAVE_MPI */
 
+#ifdef HAVE_OPENMP
+# include <omp.h>
+#endif /* HAVE_OPENMP */
+
 #ifdef HAVE_LIBGSL
 # include <gsl/gsl_math.h>
 # include <gsl/gsl_ieee_utils.h>
@@ -148,30 +152,38 @@ void print_settings()
         fprintf(stdout, "(1) Application settings\n");
 
 #ifdef HAVE_LIBGSL
-        fprintf(stdout, "GSL configured   : true\n");
+        fprintf(stdout, "GSL configured        : true\n");
 #else
-        fprintf(stdout, "GSL configured   : false\n");
+        fprintf(stdout, "GSL configured        : false\n");
 #endif /* HAVE_LIBGSL */
 
-#ifdef NDEBUG
-        fprintf(stdout, "Debug            : true\n\n");
+#ifdef HAVE_OPENMP
+        fprintf(stdout, "OpenMP                : true\n");
+        fprintf(stdout, "Max number of Threads : %d\n", omp_get_max_threads());
+        fprintf(stdout, "Support Nesting (0/1) : %d\n\n", omp_get_nested());
 #else
-        fprintf(stdout, "Debug            : false\n\n");
+        fprintf(stdout, "OpenMP                : false\n\n");
+#endif /* HAVE_OPENMP */
+
+#ifdef NDEBUG
+        fprintf(stdout, "Debug                 : true\n\n");
+#else
+        fprintf(stdout, "Debug                 : false\n\n");
 #endif /* NDEBUG */
 
         fprintf(stdout, "(2) Mesh settings\n");
-        fprintf(stdout, "Space Dimension  : %d\n", globalArgs.s);
-        fprintf(stdout, "Time Dimension   : %d\n", globalArgs.t);
-        fprintf(stdout, "Delta            : %1.8f\n", globalArgs.d);
-        fprintf(stdout, "Input Range      : %2.2f <= x <= %2.2f; %2.2f <= y <= %2.2f\n\n",
+        fprintf(stdout, "Space Dimension       : %d\n", globalArgs.s);
+        fprintf(stdout, "Time Dimension        : %d\n", globalArgs.t);
+        fprintf(stdout, "Delta                 : %1.8f\n", globalArgs.d);
+        fprintf(stdout, "Input Range           : %2.2f <= x <= %2.2f; %2.2f <= y <= %2.2f\n\n",
                 globalArgs.x0, globalArgs.x1, globalArgs.y0, globalArgs.y1);
 
         fprintf(stdout, "(3) Conjugate Gradient settings\n");
-        fprintf(stdout, "Error Threshold  : %e\n\n", globalArgs.e);
+        fprintf(stdout, "Error Threshold       : %e\n\n", globalArgs.e);
 
 #ifdef HAVE_MPI
         fprintf(stdout, "(4) MPI settings\n");
-        fprintf(stdout, "Number Processors : %d\n", mpiArgs.num_tasks);
+        fprintf(stdout, "Number Processors     : %d\n", mpiArgs.num_tasks);
     }
 #endif /* HAVE_MPI */
 
