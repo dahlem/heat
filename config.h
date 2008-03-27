@@ -27,7 +27,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Define if you have the MPI library. */
-/* #undef HAVE_MPI */
+#define HAVE_MPI 1
 
 /* Define if OpenMP is enabled */
 #define HAVE_OPENMP 1
@@ -69,19 +69,19 @@
 #define PACKAGE_NAME "563_pde_poisson"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "563_pde_poisson 0.5"
+#define PACKAGE_STRING "563_pde_poisson 0.8"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "563_pde_poisson"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.5"
+#define PACKAGE_VERSION "0.8"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.5"
+#define VERSION "0.8"
 
 /* os type */
 #define YOUR_OS "i686-pc-linux-gnu"

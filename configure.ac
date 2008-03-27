@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([563_pde_poisson],
-        [0.5],
+        [0.8],
         [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie])
 
 
@@ -48,6 +48,7 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([sqrt])
+AC_FUNC_ERROR_AT_LINE
 
 # GSL library checks
 # enable gsl?
