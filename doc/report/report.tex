@@ -55,6 +55,10 @@
   functions (i.e., \ccode{GSL_MAX} and \ccode{GSL_MIN}) and to control
   the floating point environment of the application.
 \item The cunit library was used to implement the unit tests.
+\item The application was implemented with OpenMP support. The problem
+  domain lends itself to multi-threaded programming. Especially,
+  expensive operations such as the matrix-vector multiply and the
+  initialisation of the matrix.
 \end{itemize}
 
 \section{Configuration}
@@ -78,6 +82,8 @@ inter-dependencies which are enforced.
   \item --enable-mpi : enables the parallel execution of the
     application using MPI. If MPI is enabled the unit tests are
     disabled, because the tests cannot be executed in a parallel fashion.
+  \item --enable-openmp : enables OpenMP in order to support
+    multi-threaded execution.
   \item --enable-debug : enables debug messages and asserts in some of
     the functions.
   \item --enable-report : Enable the report generation which is
@@ -110,6 +116,15 @@ make
 make
 \end{verbatim}
     Compile the sources for parallel execution
+  \item No gcov, no tests, MPI and OpenMP enabled
+\begin{verbatim}
+./configure --enable-mpi --enable-openmp
+make
+\end{verbatim}
+    Compile the sources for hybrid execution, i.e., that means that
+    the courser tasks are distributed among several remote nodes,
+    while the finer level is parallelised on a single machine with
+    threads.
   \item No gcov
 \begin{verbatim}
 ./configure --enable-test
@@ -162,6 +177,81 @@ the implemented modules and the source files.
 The lcov coverage report is provided in the coverage folder. Though,
 only the infrastructural modules are tested, such as vector and matrix
 operations.
+
+\chapter{Approach}
+\label{cha:approach}
+
+This chapter outlines the general approach taken for the development
+of the parallel conjugate gradient solver.
+
+\section{Configuration of the Code}
+\label{sec:configuration-code}
+
+The C code is implemented in such a way that the features, i.e., MPI,
+OpenMP, debug, and GSL, can be configured individually. As a result
+the code is portable across a number of platforms and does not depend
+on a specific feature to be available. The disadvantage of this
+approach is that the code becomes a bit harder to maintain, because
+the features are enclosed in \ccode{ifdef} statements.
+
+\section{Data Structures}
+\label{sec:data-structures}
+
+The two main data structures, vector and matrix, are implemented as C
+\ccode{structs} with supporting routines, such as allocation, free,
+add, scale, dot product, multiply, etc. The vector structure provides
+a pointer to a double primitive type and the length of the vector. The
+matrix consists of a matrix type (symmetric band SB, and generic band
+GB), the matrix storage format (compressed diagonal storage CDS), a
+pointer to diagonal vectors, the number of diagonals, and an index
+which determines the relative positions of the specified
+diagonals. Based on these characteristics different matrix-vector
+multiply routines apply (see \prettyref{sec:matr-vect-mult}).
+
+\section{Domain Decomposition}
+\label{sec:domain-decomposition}
+
+The finite difference scheme for Poisson's equation is decomposed into
+equally-sized rows among the available nodes. If the square dimension
+of the finite difference scheme is not divisible by the number of
+configured nodes then the dimension is adjusted and appended to the
+matrix and the respective vectors in the linear system.
+
+The 1D decomposition does not require MPI communication. Instead, each
+node is responsible for setting up the respective data structures in
+the appropriate way.
+
+
+\section{Dot Product}
+\label{sec:dot-product}
+
+The dot product is relatively easy to calculate in a cluster
+environment. Each node computes the partial dot product of the local
+vector view. Once the local sum is complete, the
+\ccode{MPI_Allreduce()} routine is executed which sums the local parts
+into a global result. This result is visible to all nodes. However,
+the communication just involves sending the partial dot product value
+to the MPI environment.
+
+\section{Matrix-Vector Multiply}
+\label{sec:matr-vect-mult}
+
+While the serial code takes advantage of the symmetry of the matrix,
+the parallel code sets up a 5-banded matrix on each node. Both
+matrix-vector multiplications are solved with different functions that
+take advantage of the given structure. In fact the 5-banded
+matrix-vector multiplication is implemented as a generic band
+matrix-vector multiply. Consequently, the conjugate gradient solver
+can be used for any 2 dimensional finite difference problem. The
+solver interprets the structure of the matrix and delegates to the
+appropriate multiplication routine. However, the solver does not test
+for the well-posedness of the problem.
+
+MPI communication only takes place to retrieve the global u-vector
+before calculating the matrix-vector product. For this the
+\ccode{MPI_Allgather()} method is called, which results in any node
+having a global u-vector.
+
 
 \section{Execution}
 \label{sec:execution}
