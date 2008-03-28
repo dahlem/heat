@@ -77,6 +77,9 @@ void dcdsgbmv(const matrix *const mat, const vector *const u, const vector *v)
     zero(v);
 
     for (i = 0; i < mat->len; ++i) {
+#ifdef HAVE_OPENMP
+# pragma omp parallel for shared(v, i) private(j)
+#endif /* HAVE_OPENMP */
 #ifdef HAVE_LIBGSL
         for (j = GSL_MAX(0, 0 - mat->index[i]);
              j < GSL_MIN(mat->diags[i].len, u->len - mat->index[i]);
