@@ -27,7 +27,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Define if you have the MPI library. */
-#define HAVE_MPI 1
+/* #undef HAVE_MPI */
 
 /* Define if OpenMP is enabled */
 #define HAVE_OPENMP 1
@@ -57,7 +57,7 @@
 #define HAVE_UNISTD_H 1
 
 /* define debugging, if enabled */
-#define NDEBUG 1
+/* #undef NDEBUG */
 
 /* Name of package */
 #define PACKAGE "563_pde_poisson"
