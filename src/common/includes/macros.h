@@ -16,6 +16,14 @@
 #ifndef __MACROS_H__
 #define __MACROS_H__
 
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_math.h>
+#endif /* HAVE_LIBGSL */
+
 
 /** @defgroup Macros
  * @{
@@ -25,17 +33,26 @@
 /** @def MAX
  * Given two numbers, return the bigger one.
  */
-# define MAX(a, b) ((a) > (b) ? (a) : (b))
+# ifdef HAVE_LIBGSL
+#  define MAX(a, b) GSL_MAX(a, b)
+# else
+#  define MAX(a, b) ((a) > (b) ? (a) : (b))
+# endif /* HAVE_LIBGSL */
 #endif
+
 #ifndef MIN
 /** @def MIN
  * Given two numbers, return the smaller one.
  */
-# define MIN(a, b) ((a) < (b) ? (a) : (b))
+# ifdef HAVE_LIBGSL
+#  define MIN(a, b) GSL_MIN(a, b)
+# else
+#  define MIN(a, b) ((a) < (b) ? (a) : (b))
+# endif /* HAVE_LIBGSL */
 #endif
 
 /** @}*/
 
 
 
-#endif
+#endif /* __MACROS_H__ */
