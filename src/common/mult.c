@@ -20,12 +20,6 @@
 # include <config.h>
 #endif
 
-#ifdef HAVE_LIBGSL
-# include <gsl/gsl_math.h>
-#else
-# include "macros.h"
-#endif /* HAVE_LIBGSL */
-
 #ifdef HAVE_MPI
 # include <stdio.h>
 # include <mpi.h>
@@ -36,6 +30,7 @@
 # include <omp.h>
 #endif /* HAVE_OPENMP */
 
+#include "macros.h"
 #include "matrix.h"
 #include "mult.h"
 #include "vector.h"
@@ -47,7 +42,7 @@ void dcdssbmv(const matrix *const mat, const vector *const u, const vector *v)
     int p;
 
 #ifdef HAVE_OPENMP
-# pragma omp parallel for shared(v) private(i, j, p)
+# pragma omp for private(i, j, p)
 #endif /* HAVE_OPENMP */
     for (i = 0; i < mat->diags[0].len; ++i) {
         /* 1. main diagonal part */
@@ -78,17 +73,11 @@ void dcdsgbmv(const matrix *const mat, const vector *const u, const vector *v)
 
     for (i = 0; i < mat->len; ++i) {
 #ifdef HAVE_OPENMP
-# pragma omp parallel for shared(v, i) private(j)
+# pragma omp for private(j)
 #endif /* HAVE_OPENMP */
-#ifdef HAVE_LIBGSL
-        for (j = GSL_MAX(0, 0 - mat->index[i]);
-             j < GSL_MIN(mat->diags[i].len, u->len - mat->index[i]);
-             ++j) {
-#else
         for (j = MAX(0, 0 - mat->index[i]);
              j < MIN(mat->diags[i].len, u->len - mat->index[i]);
              ++j) {
-#endif /* HAVE_LIBGSL */
             v->data[j] +=
                 mat->diags[i].data[j]
                 * u->data[j + mat->index[i]];
