@@ -48,6 +48,12 @@
  */
 #define MALLOC_ERROR                    15
 
+/** @def CONVERGENCE_ERROR
+ * Error code if the conjugate gradient method did not converge in the
+ * maximum number of iterations.
+ */
+#define CONVERGENCE_ERROR               16
+
 /** @}*/
 
 
