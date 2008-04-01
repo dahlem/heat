@@ -92,7 +92,10 @@ int main(int argc, char *argv[])
 #ifdef HAVE_MPI
         finalise();
 #endif /* HAVE_MPI */
-        return status;
+        fprintf(stderr, "ERROR: Received command-line parsing status %d\n", status);
+        fflush(stderr);
+
+        return EXIT_FAILURE;
     }
 
 #ifdef HAVE_LIBGSL
@@ -125,6 +128,9 @@ int main(int argc, char *argv[])
     /* solve with conjugate gradient */
     if (status == 0) {
         status = conjugate(&A, &v, &u, &x_bar, globalArgs.e);
+    } else {
+        fprintf(stderr, "ERROR: Received conjugate method status %d\n", status);
+        fflush(stderr);
     }
 
     /* print the vector into a gnuplot format */
@@ -160,7 +166,7 @@ void print_settings()
 #ifdef HAVE_OPENMP
         fprintf(stdout, "OpenMP                : true\n");
         fprintf(stdout, "Max number of Threads : %d\n", omp_get_max_threads());
-        fprintf(stdout, "Support Nesting (0/1) : %d\n\n", omp_get_nested());
+        fprintf(stdout, "Support Nesting (0/1) : %d\n", omp_get_nested());
 #else
         fprintf(stdout, "OpenMP                : false\n");
 #endif /* HAVE_OPENMP */
