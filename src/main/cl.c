@@ -134,7 +134,6 @@ int process_cl(int argc, char **argv)
     opt = getopt(argc, argv, cl_arguments);
 
     while (opt != -1) {
-        fprintf(stdout, "%c\n", opt);
         fflush(stdout);
         switch (opt) {
             case 't':
