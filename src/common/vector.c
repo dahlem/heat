@@ -26,10 +26,6 @@
 # include <mpi.h>
 #endif /* HAVE_MPI */
 
-#ifdef HAVE_OPENMP
-# include <omp.h>
-#endif /* HAVE_OPENMP */
-
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -68,9 +64,6 @@ void zero(const vector *vec)
 {
     int i;
 
-#ifdef nHAVE_OPENMP
-# pragma omp parallel for shared(vec) private(i)
-#endif /* HAVE_OPENMP */
     for (i = 0; i < vec->len; ++i) {
         vec->data[i] = 0.0;
     }
