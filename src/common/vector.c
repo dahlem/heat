@@ -26,6 +26,10 @@
 # include <mpi.h>
 #endif /* HAVE_MPI */
 
+#ifdef HAVE_OPENMP
+# include <omp.h>
+#endif /* HAVE_OPENMP */
+
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -64,6 +68,9 @@ void zero(const vector *vec)
 {
     int i;
 
+#ifdef nHAVE_OPENMP
+# pragma omp parallel for shared(vec) private(i)
+#endif /* HAVE_OPENMP */
     for (i = 0; i < vec->len; ++i) {
         vec->data[i] = 0.0;
     }
@@ -77,7 +84,6 @@ double dotProduct(const vector *const a, const vector *const b)
     double global_result;
 #endif /* HAVE_MPI */
 
-
 #ifdef NDEBUG
     /* check the assumption that both vectors have the same size */
     assert(a->len == b->len);
@@ -86,7 +92,7 @@ double dotProduct(const vector *const a, const vector *const b)
     result = 0.0;
 
     for (i = 0; i < a->len; ++i) {
-        result += a->data[i] * b->data[i];
+        result += (a->data[i] * b->data[i]);
     }
 
 #ifdef HAVE_MPI
@@ -114,14 +120,9 @@ void daxpy(double alpha, const vector *const x, const vector *y)
 
 double dnrm2(const vector *const x)
 {
-    int i;
     double result;
 
-    result = 0.0;
-
-    for (i = 0; i < x->len; ++i) {
-        result += (x->data[i] * x->data[i]);
-    }
+    result = dotProduct(x, x);
 
     return sqrt(result);
 }
