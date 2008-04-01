@@ -30,7 +30,7 @@
 /* #undef HAVE_MPI */
 
 /* Define if OpenMP is enabled */
-#define HAVE_OPENMP 1
+/* #undef HAVE_OPENMP */
 
 /* Define to 1 if you have the `sqrt' function. */
 /* #undef HAVE_SQRT */
@@ -69,19 +69,19 @@
 #define PACKAGE_NAME "563_pde_poisson"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "563_pde_poisson 0.8"
+#define PACKAGE_STRING "563_pde_poisson 0.9"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "563_pde_poisson"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.8"
+#define PACKAGE_VERSION "0.9"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.8"
+#define VERSION "0.9"
 
 /* os type */
 #define YOUR_OS "i686-pc-linux-gnu"
