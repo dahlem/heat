@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([563_pde_poisson],
-        [0.9],
+        [1.0],
         [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie])
 
 
