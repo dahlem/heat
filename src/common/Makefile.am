@@ -10,29 +10,26 @@
 
 noinst_LTLIBRARIES = libcommon.la
 
-if COMPILE_PARALLEL
-libcommon_la_SOURCES =                                                \
-	vector.c                                                      \
-	matrix.c                                                      \
-	mult.c                                                        \
-	mpi-utils.c                                                   \
-	mpi-common.c
-else
 libcommon_la_SOURCES =                                                \
 	vector.c                                                      \
 	matrix.c                                                      \
 	mult.c
+
+if COMPILE_PARALLEL
+libcommon_la_SOURCES +=                                               \
+	mpi-utils.c                                                   \
+	mpi-common.c
 endif
 
 libcommon_la_CPPFLAGS =                                               \
 	-I./includes
 
-if HAVE_GSL
-libcommon_la_LIBADD =                                                \
-	$(GSL_LIBS)
-else
-libcommon_la_LIBADD =                                                \
+libcommon_la_LIBADD =                                                 \
 	-lm
+
+if HAVE_GSL
+libcommon_la_LIBADD +=                                                \
+	$(GSL_LIBS)
 endif
 
 
