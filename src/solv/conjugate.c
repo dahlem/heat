@@ -24,6 +24,11 @@
 # include "mpi-common.h"
 #endif /* HAVE_MPI */
 
+#ifdef HAVE_OPENMP
+# include <omp.h>
+#endif /* HAVE_OPENMP */
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -32,6 +37,14 @@
 #include "matrix.h"
 #include "mult.h"
 #include "vector.h"
+
+
+void cleanup(vector *temp, vector *p, vector *r)
+{
+    vector_free(temp);
+    vector_free(p);
+    vector_free(r);
+}
 
 
 int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
@@ -75,43 +88,73 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
     /* initial value for the while counter \f$ k = 1 \f$ */
     k = 1;
 
-    /* calculate the error */
-    /* \f$ dp = (r, r) \f$ */
-    error = dotProduct(&r, &r);
+#ifdef HAVE_OPENMP
+# pragma omp parallel shared(k, maxCount, error, err_thres, temp, r, x_bar, alpha)
+    {
+#endif /* HAVE_OPENMP */
 
-    while ((k <= maxCount) || (error > err_thres)) {
-        /* \f$ v = A * p \f$ */
-        dgbmv(A, &p, &temp);
-
-        /* \f$ \alpha = (r' * r)/(p' * v)  \f$ */
-        dotprod = dotProduct(&p, &temp);
-        alpha = error / dotprod;
-
-        /* \f$ x = x + \alpha * p   \f$ */
-        daxpy(alpha, &p, x_bar);
-
-        /* \f$ new_r = r - \alpha * v  \f$ */
-        daxpy(-alpha, &temp, &r);
-
-        /* \f$ \beta = (new_r' * new_r)/(r' * r) \f$ */
-        norm = dnrm2(&r);
-        beta = (norm * norm) / error;
-
-        /* \f$ p = new_r + \beta * p  \f$ */
-        vector_copy(&temp, &p);
-        scale(beta, &temp);
-        add(&temp, &r);
-        vector_copy(&p, &temp);
-
+        /* calculate the error */
         /* \f$ dp = (r, r) \f$ */
-        error = dotProduct(&r, &r);
-        k++;
+#ifdef HAVE_OPENMP
+# pragma omp single
+        {
+#endif /* HAVE_OPENMP */
+            error = dotProduct(&r, &r);
+#ifdef HAVE_OPENMP
+        }
+#endif /* HAVE_OPENMP */
+
+        while (error > err_thres) {
+#ifdef NDEBUG
+            fprintf(stdout, "%d,%f", k, error);
+            fflush(stdout);
+#endif /* NDEBUG */
+            /* \f$ v = A * p \f$ */
+            dgbmv(A, &p, &temp);
+
+#ifdef HAVE_OPENMP
+# pragma omp single
+            {
+#endif /* HAVE_OPENMP */
+                if (k > maxCount) {
+                    fprintf(stdout, "WARNING: iteration count %d exceeds maximum value %d\n", k, maxCount);
+                    fflush(stdout);
+                }
+
+                /* \f$ \alpha = (r' * r)/(p' * v)  \f$ */
+                dotprod = dotProduct(&p, &temp);
+                alpha = error / dotprod;
+
+                /* \f$ x = x + \alpha * p   \f$ */
+                daxpy(alpha, &p, x_bar);
+
+                /* \f$ new_r = r - \alpha * v  \f$ */
+                daxpy(-alpha, &temp, &r);
+
+                /* \f$ \beta = (new_r' * new_r)/(r' * r) \f$ */
+                dotprod = dotProduct(&r, &r);
+                beta = dotprod / error;
+
+                /* \f$ p = new_r + \beta * p  \f$ */
+                vector_copy(&temp, &p);
+                scale(beta, &temp);
+                add(&temp, &r);
+                vector_copy(&p, &temp);
+
+                /* \f$ dp = (r, r) \f$ */
+                error = dotprod;
+                k++;
+#ifdef HAVE_OPENMP
+            }
+#endif /* HAVE_OPENMP */
+        }
+
+#ifdef HAVE_OPENMP
     }
+#endif /* HAVE_OPENMP */
 
     /* clean-up allocated memory */
-    vector_free(&temp);
-    vector_free(&p);
-    vector_free(&r);
+    cleanup(&temp, &p, &r);
 
     return EXIT_SUCCESS;
 }
