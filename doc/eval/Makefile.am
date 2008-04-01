@@ -10,6 +10,7 @@
 
 eval_src =                                                           \
 	poiss.gnu                                                    \
+	poiss-smooth.gnu                                             \
 	exact.gnu                                                    \
 	serial.dat                                                   \
 	parallel.dat
