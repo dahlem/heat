@@ -71,6 +71,8 @@ void init()
  */
 int verify_cl()
 {
+    double temp;
+
     if (globalArgs.s < 3) {
         globalArgs.s = DEFAULT_SPACE_DIMENSION;
     }
@@ -105,13 +107,19 @@ Use the default threshold instead.\n");
 
     /* grid dimensions take precedence over delta value configuration */
     if ((globalArgs.s == DEFAULT_SPACE_DIMENSION)
-        && (globalArgs.t == DEFAULT_TIME_DIMENSION)) {
-        globalArgs.s = globalArgs.t = round(((globalArgs.x1 - globalArgs.x0)
-                                             / globalArgs.d) + 1);
+        && (globalArgs.t == DEFAULT_TIME_DIMENSION)
+        && (globalArgs.d != DEFAULT_DELTA)) {
+        /* add a small amount to nudge the double value just over a the next integer value */
+        temp = (fabs(globalArgs.x1 - globalArgs.x0) / globalArgs.d) + 0.001;
+        globalArgs.s = globalArgs.t = (temp + 1.0);
     }
 
     /* derive the delta value which we assume is equal in both grid dimensions. */
-    globalArgs.d = (globalArgs.x1 - globalArgs.x0) / (globalArgs.s - 1);
+    if (((globalArgs.s != DEFAULT_SPACE_DIMENSION)
+        && (globalArgs.t != DEFAULT_TIME_DIMENSION))
+        || (globalArgs.d != DEFAULT_DELTA)) {
+        globalArgs.d = fabs(globalArgs.x1 - globalArgs.x0) / (globalArgs.s - 1.0);
+    }
 
     return EXIT_SUCCESS;
 }
@@ -126,6 +134,8 @@ int process_cl(int argc, char **argv)
     opt = getopt(argc, argv, cl_arguments);
 
     while (opt != -1) {
+        fprintf(stdout, "%c\n", opt);
+        fflush(stdout);
         switch (opt) {
             case 't':
                 globalArgs.t = atoi(optarg);
