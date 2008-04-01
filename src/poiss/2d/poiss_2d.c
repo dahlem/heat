@@ -30,10 +30,6 @@
 # include "mpi-utils.h"
 #endif /* HAVE_MPI */
 
-#ifdef HAVE_OPENMP
-# include <omp.h>
-#endif /* HAVE_OPENMP */
-
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -47,11 +43,6 @@
 void init_matrix(matrix *A, int block_matrix_dim)
 {
     int i;
-#ifdef HAVE_OPENMP
-# ifdef NDEBUG
-    int tid, nthreads;
-# endif /* NDEBUG */
-#endif /* HAVE_OPENMP */
 
 #ifdef HAVE_MPI
     int len;
@@ -71,182 +62,64 @@ void init_matrix(matrix *A, int block_matrix_dim)
         len -= row_adjust;
     }
 
-    /* sections multi-threading:
-       Each for-loop is executed in a separate thread. */
-# ifdef HAVE_OPENMP
-#  ifdef NDEBUG
-#   pragma omp parallel shared(A, nthreads) private(i, tid)
-#  else
-#   pragma omp parallel shared(A) private(i)
-#  endif /* NDEBUG */
-    {
-#  ifdef NDEBUG
-        nthreads = omp_get_num_threads();
-        tid = omp_get_thread_num();
-        if (tid == 0)
-        {
-            nthreads = omp_get_num_threads();
-            printf("Initializing matrices with %d threads...\n", nthreads);
+    for (i = 0; i < len; ++i) {
+        if ((i + A->index[0]) < 0 ) {
+            A->diags[0].data[i] = 0;
+        } else {
+            A->diags[0].data[i] = I_DIAG;
         }
-#  endif /* NDEBUG */
+    }
 
-#  pragma omp sections nowait
-        {
-
-        /* set up partial matrix for each processor */
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the first section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < len; ++i) {
-                    if ((i + A->index[0]) < 0 ) {
-                        A->diags[0].data[i] = 0;
-                    } else {
-                        A->diags[0].data[i] = I_DIAG;
-                    }
-                }
-
-# ifdef HAVE_OPENMP
+    for (i = 0; i < len; ++i) {
+        if ((i + A->index[1]) < 0 ) {
+            A->diags[1].data[i] = 0;
+        } else {
+            if (((i + mpiArgs.rank * rows) % block_matrix_dim) == 0) {
+                A->diags[1].data[i] = 0;
+            } else {
+                A->diags[1].data[i] = D_DIAG_1;
             }
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the second section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < len; ++i) {
-                    if ((i + A->index[1]) < 0 ) {
-                        A->diags[1].data[i] = 0;
-                    } else {
-                        if (((i + mpiArgs.rank * rows) % block_matrix_dim) == 0) {
-                            A->diags[1].data[i] = 0;
-                        } else {
-                            A->diags[1].data[i] = D_DIAG_1;
-                        }
-                    }
-                }
+        }
+    }
 
-# ifdef HAVE_OPENMP
-            }
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the third section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < len; ++i) {
-                    A->diags[2].data[i] = D_MAIN_DIAG;
-                }
+    for (i = 0; i < len; ++i) {
+        A->diags[2].data[i] = D_MAIN_DIAG;
+    }
 
-# ifdef HAVE_OPENMP
+    for (i = 0; i < len; ++i) {
+        if ((i + A->index[3]) < (((mpiArgs.num_tasks - 1) * A->diags[3].len) + len)) {
+            if (((i + 1 + mpiArgs.rank * rows) % block_matrix_dim) == 0) {
+                A->diags[3].data[i] = 0;
+            } else {
+                A->diags[3].data[i] = D_DIAG_1;
             }
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the fourth section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < len; ++i) {
-                    if ((i + A->index[3]) < (((mpiArgs.num_tasks - 1) * A->diags[3].len) + len)) {
-                        if (((i + 1 + mpiArgs.rank * rows) % block_matrix_dim) == 0) {
-                            A->diags[3].data[i] = 0;
-                        } else {
-                            A->diags[3].data[i] = D_DIAG_1;
-                        }
-                    } else {
-                        A->diags[3].data[i] = 0;
-                    }
-                }
+        } else {
+            A->diags[3].data[i] = 0;
+        }
+    }
 
-# ifdef HAVE_OPENMP
-            }
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the fifth section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < len; ++i) {
-                    if ((i + A->index[4]) < (((mpiArgs.num_tasks - 1) * A->diags[4].len) + len)) {
-                        A->diags[4].data[i] = I_DIAG;
-                    } else {
-                        A->diags[4].data[i] = 0;
-                    }
-                }
-# ifdef HAVE_OPENMP
-            } /* end last section */
-        } /* end of sections */
-    } /* end of parallel section */
-# endif /* HAVE_OPENMP */
+    for (i = 0; i < len; ++i) {
+        if ((i + A->index[4]) < (((mpiArgs.num_tasks - 1) * A->diags[4].len) + len)) {
+            A->diags[4].data[i] = I_DIAG;
+        } else {
+            A->diags[4].data[i] = 0;
+        }
+    }
 #else
 
-    /* sections multi-threading:
-       Each for-loop is executed in a separate thread. */
-# ifdef HAVE_OPENMP
-#  ifdef NDEBUG
-#   pragma omp parallel shared(A,nthreads) private(i, tid)
-#  else
-#   pragma omp parallel shared(A) private(i)
-#  endif /* NDEBUG */
-    {
-
-#  ifdef NDEBUG
-        nthreads = omp_get_num_threads();
-        tid = omp_get_thread_num();
-        if (tid == 0)
-        {
-            nthreads = omp_get_num_threads();
-            printf("Initializing matrices with %d threads...\n", nthreads);
+    for (i = 0; i < A->diags[2].len; ++i) {
+        A->diags[2].data[i] = I_DIAG;
+    }
+    for (i = 0; i < A->diags[1].len; ++i) {
+        if (((i + 1) % block_matrix_dim) == 0) {
+            A->diags[1].data[i] = 0;
+        } else {
+            A->diags[1].data[i] = D_DIAG_1;
         }
-#  endif /* NDEBUG */
-
-#  pragma omp sections nowait
-        {
-            /* set up matrix for single processor:
-               only main and upper-main diagonals needed */
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the first section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < A->diags[2].len; ++i) {
-                    A->diags[2].data[i] = I_DIAG;
-                }
-# ifdef HAVE_OPENMP
-            }
-
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the second section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < A->diags[1].len; ++i) {
-                    if (((i + 1) % block_matrix_dim) == 0) {
-                        A->diags[1].data[i] = 0;
-                    } else {
-                        A->diags[1].data[i] = D_DIAG_1;
-                    }
-                }
-# ifdef HAVE_OPENMP
-            }
-#  pragma omp section
-            {
-#  ifdef NDEBUG
-                printf("Thread %d executes the third section\n", tid);
-#  endif /* NDEBUG */
-# endif /* HAVE_OPENMP */
-                for (i = 0; i < A->diags[0].len; ++i) {
-                    A->diags[0].data[i] = D_MAIN_DIAG;
-                }
-# ifdef HAVE_OPENMP
-            } /* end last section */
-        } /* end of sections */
-    } /* end of parallel section */
-# endif /* HAVE_OPENMP */
+    }
+    for (i = 0; i < A->diags[0].len; ++i) {
+        A->diags[0].data[i] = D_MAIN_DIAG;
+    }
 #endif /* HAVE_MPI */
 }
 
@@ -398,12 +271,6 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim,
                     double (*src_dens_funcPtr)(double, double),
                     double (*bound_cond_funcPtr)(double, double))
 {
-#ifdef HAVE_OPENMP
-# ifdef NDEBUG
-    int tid, nthreads;
-# endif /* NDEBUG */
-#endif /* HAVE_OPENMP */
-
 #ifdef HAVE_MPI
     int row_adjust;         /* adjust for unequal row-decompositioning */
     int col_offset;
@@ -463,66 +330,17 @@ void setup_poiss_2d(matrix *A, vector *u, vector *v, vector *x_bar, int dim,
     matrix_alloc(A, elems, NULL);
 #endif /* HAVE_MPI */
 
-    /* sections multi-threading:
-       Each for-loop is executed in a separate thread. */
-#ifdef HAVE_OPENMP
-# ifdef NDEBUG
-#  pragma omp parallel shared(A,nthreads) private(i, tid)
-# else
-#  pragma omp parallel shared(A) private(i)
-# endif /* NDEBUG */
-    {
+    /* initialise the matrix */
+    init_matrix(A, block_matrix_dim);
+    /* initialise the x_bar vector */
+    vector_alloc(x_bar, rows);
 
-# ifdef NDEBUG
-        nthreads = omp_get_num_threads();
-        tid = omp_get_thread_num();
-        if (tid == 0)
-        {
-            nthreads = omp_get_num_threads();
-            printf("Initializing the linear system with %d threads...\n", nthreads);
-        }
-# endif /* NDEBUG */
+    /* initialise the u vector */
+    vector_alloc(u, rows);
+    for (i = 0; i < rows; ++i) {
+        u->data[i] = 1;
+    }
 
-# pragma omp sections nowait
-        {
-# pragma omp section
-            {
-# ifdef NDEBUG
-                printf("Thread %d executes the first section (init matrix)\n", tid);
-# endif /* NDEBUG */
-#endif /* HAVE_OPENMP */
-                /* initialise the matrix */
-                init_matrix(A, block_matrix_dim);
-#ifdef HAVE_OPENMP
-            }
-# pragma omp section
-            {
-# ifdef NDEBUG
-                printf("Thread %d executes the second section (init x_bar)\n", tid);
-# endif /* NDEBUG */
-#endif /* HAVE_OPENMP */
-                /* initialise the x_bar vector */
-                vector_alloc(x_bar, rows);
-
-                /* initialise the u vector */
-                vector_alloc(u, rows);
-                for (i = 0; i < rows; ++i) {
-                    u->data[i] = 1;
-                }
-#ifdef HAVE_OPENMP
-            }
-# pragma omp section
-            {
-# ifdef NDEBUG
-                printf("Thread %d executes the third section (init v)\n", tid);
-# endif /* NDEBUG */
-#endif /* HAVE_OPENMP */
-
-                /* initialise the v vector */
-                init_v(v, block_matrix_dim, delta, coord, src_dens_funcPtr, bound_cond_funcPtr);
-#ifdef HAVE_OPENMP
-            } /* end last section */
-        } /* end of sections */
-    } /* end of parallel section */
-#endif /* HAVE_OPENMP */
+    /* initialise the v vector */
+    init_v(v, block_matrix_dim, delta, coord, src_dens_funcPtr, bound_cond_funcPtr);
 }
