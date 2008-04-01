@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([563_pde_poisson],
-        [0.8],
+        [0.9],
         [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie])
 
 
@@ -20,7 +20,7 @@ AC_CONFIG_HEADER([config.h])
 # extra autoconf macros
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([-W -Wall foreign])
+AM_INIT_AUTOMAKE([foreign])
 
 # Checks for programs.
 AC_PROG_CXX
