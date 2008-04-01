@@ -18,7 +18,6 @@
 \usepackage{listings}
 \usepackage{prettyref}
 \usepackage{psfrag}
-\usepackage{subfigure}
 
 \def\ccode#1{
   \lstinline[basicstyle=\ttfamily,language=C]{#1} }
@@ -28,7 +27,6 @@
 
 \newrefformat{fig}{\hyperref[{#1}]{Figure~\ref*{#1}}}
 \newrefformat{cha}{\hyperref[{#1}]{Chapter~\ref*{#1}}}
-\newrefformat{lst}{\hyperref[{#1}]{Listing~\ref*{#1}}}
 \newrefformat{sec}{\hyperref[{#1}]{Section~\ref*{#1}}}
 \newrefformat{sub}{\hyperref[{#1}]{Section~\ref*{#1}}}
 \newrefformat{eq}{\hyperref[{#1}]{Equation~\ref*{#1}}}
@@ -274,50 +272,57 @@ using \ccode{pragma} directives.
 The following steps were executed in the root directory of the project
 to retrieve a flat execution profile of the application:
 
-\begin{enumerate}
-\item \verb=./configure CFLAGS='-pg' --enable-gsl=
-\item \verb=make clean all=
-\item \verb=./src/main/pdepoiss_solv -d 0.01=
-\item \verb=gprof ./src/main/pdepoiss_solv gmon.out=
-\end{enumerate}
+\begin{verbatim}
+./configure CFLAGS=''-pg'' --enable-gsl
+make clean all
+./src/main/pdepoiss_solv -d 0.01
+gprof ./src/main/pdepoiss_solv gmon.out
+\end{verbatim}
 
 The flat profile looks like this:
 \begin{verbatim}
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total
  time   seconds   seconds    calls   s/call   s/call  name
- 77.02    650.58   650.58   124003     0.01     0.01  dotProduct
- 15.44    781.01   130.43    62002     0.00     0.00  dcdssbmv
-  3.38    809.59    28.58   124003     0.00     0.00  daxpy
-  1.78    824.64    15.06    62001     0.00     0.00  add
-  1.76    839.53    14.89    62001     0.00     0.00  scale
+ 56.69      0.85     0.85      403     0.00     0.00  dcdssbmv
+ 16.01      1.09     0.24      805     0.00     0.00  dotProduct
+ 12.67      1.28     0.19      805     0.00     0.00  daxpy
+ 10.00      1.43     0.15      402     0.00     0.00  add
+  4.67      1.50     0.07      402     0.00     0.00  scale
+  0.00      1.50     0.00    63997     0.00     0.00  bound_cond
 \end{verbatim}
 
 This profile shows that two methods, \ccode{dotProduct()} and
-\ccode{dcdssbmv()}, are responsible for more than 90\% of the runtime of
-the application.
+\ccode{dcdssbmv()}, are responsible for more than 70\% of the runtime
+of the application.
 
-In order to improve the performance, those two methods were declared
-to run in parallel execution contexts. Additionally, other routines
-that are easy to parallelise and constitute potential huge iteration
-counts were also considered. Those include \ccode{zero()} which
-zeros a vector, \ccode{daxpy()} to add a scaled vector to another one,
-\ccode{add()} to add two vectors, \ccode{scale()} to scale a vector,
-and those that initialise the matrix and vectors.
+In order to improve the performance, the matrix-vector multiply
+(\ccode{dcdssbmv}) was declared to run in a parallel execution
+contexts.
 
-The initialisation of the data structures further support a nested
-threading model, which can be controlled with the \verb=OMP\_NESTED=
-environment variable.
+The results of the speedup $S_{p}=T_{1}/T_{p}$ and the efficiency
+$E_{p}=S_{p}/p$ are presented in the following table.
 
-The results of the efficiency and the speedup are presented in the
-following table.
+\begin{table}[htb]
+  \begin{tabular}{c || c c c}
+    \textbf{Threads} ($p$) & \textbf{Execution Time} ($T$) & \textbf{Speedup} ($S$) &
+    \textbf{Efficiency} ($E$) \\
+    1 & 15.73 & 1 & 1 \\
+    2 & 12.43 & 1.26 & 0.63 \\
+    4 & 13.22 & 1.19 & 0.3\\
+    8 & 13.93 & 1.13 & 0.14\\
+  \end{tabular}
+  \caption{Performance Measures with 501 Grid Points}
+  \label{tab:thread-perf}
+\end{table}
 
-% \begin{tabular*}{}{}
-%   \textbf{Threads} & \textbf{Speedup} & \textbf{Efficiency} \\
-%   1 & & \\
-%   4 & & \\
-%   8 & & \\
-% \end{tabular*}
+The results were recorded using a more fine-grained mess with a delta
+value of $d=0.005$ which results in 501 grid points in both
+dimensions. These results show that the highest speedup is obtained
+with 2 threads. Using more threads involves a higher overhead for
+thread management, because the test runs were performed on a 2-core
+CPU \footnote{i686 Intel(R) Pentium(R) D CPU 3.00GHz GenuineIntel
+  GNU/Linux}.
 
 \chapter{Execution}
 \label{cha:execution}
@@ -351,63 +356,7 @@ smaller than 26 or otherwise the specified value. The delta value will
 be calculated based on this setting.
 
 Alternatively, the delta value can be specified upon which the space
-and time dimensions are derived. Fixing the delta value to some
-sensible values make sense to ensure that floating point operations
-are performed more accurately. It has been observed that fixing the
-dimensions to some value (i.e., 53) yields NaNs as a result. I assume
-this has something to do with floating point operations of very small
-numbers (such as 4.7308317893592655e-157). The following gdb debugger
-session identifies the location and the cause of the SIGFPE floating
-point exception:
-
-\begin{verbatim}
-> gdb
-(gdb) set env GSL_IEEE_MODE=double-precision
-(gdb) handle SIGFPE stop nopass
-(gdb) file ./src/main/pdepoiss_solv
-(gdb) r -s 53
-
-Program received signal SIGFPE, Arithmetic exception.
-0x08049ef2 in dcdssbmv (mat=0xbf98862c, u=0xbf9885b0, v=0xbf9885a8)
-    at mult.c:47
-47              v->data[i] = mat->diags[0].data[i] * u->data[i];
-(gdb) p v->data[i]
-$1 = 4.7308317893592655e-157
-(gdb) p u->data[i]
-$2 = 4.7308317893592655e-157
-(gdb) p mat->diags[0].data[i]
-$3 = 4
-\end{verbatim}
-
-The error occured in the serial code of the matrix-vector multiply
-function \ccode{dcdssbmv()}.
-
-These obvious errors go undetected, unless GSL is configured. GSL
-allows to control the floating point environment of C/C++
-applications. Executing the application with
-
-\begin{verbatim}
-GSL_IEEE_MODE="double-precision," \
-  mask-denormalized,mask-underflow" \
-    ./src/main/pdepoiss_solv -s 53
-\end{verbatim}
-
-ignores any errors related to denormalised and under-flowing small
-numbers, but it traps overflows, division by zero, and invalid
-operations \footnote{http://www.gnu.org/software/gsl/manual/}.
-
-In case GCC is used to compile the application, some compiler flags
-can be specified to use the SSE instruction set. Default on i386
-compilers is the 387 floating point co-processor which is supported by
-most chips or emulated otherwise. The SSE instruction set with double
-precision arithmetics is only available in later chips, such as the
-Pentium 4 and AMD x86-64. So, enabling the compiler options
-\begin{verbatim}
-./configure CFLAGS="-Wall -march=prescott -msse2 -mfpmath=sse"
-\end{verbatim}
-avoids numerical instability and runs considerable faster. On i686
-Intel(R) Pentium(R) D CPU 3.00GHz GenuineIntel GNU/Linux the
-improvement in execution time was
+and time dimensions are derived.
 
 The domain of the function space can be specified as well. The default
 values are set to the square region provided in the assignment
@@ -419,20 +368,23 @@ specified which is set to result.dat as default name.
 \section{Environment Variables}
 \label{sec:envir-vari}
 
-As mentioned in the previous section GSL allows some environment
-variables to be set for the application to control the floating point
-environment. The same is true for OpenMP. The following list details
-the ones used throughout the development of the application and to
-retrieve the results.
+GSL and OpenMP allow some environment variables to be set for the
+application to control the floating point environment and the
+multi-threading behaviour. The following list details the ones used
+throughout the development of the application and to retrieve the
+results.
 
 \begin{itemize}
 \item \textbf{GSL\_IEEE\_MODE}: Sets control variables values for the
   floating point environment. The variables used are
   \textit{double-precision}, \textit{mask-denormalized}, and
-  \textit{mask-underflow}.
+  \textit{mask-underflow}. This ignores any errors related to
+  denormalised and under-flowing small numbers, but it traps
+  overflows, division by zero, and invalid operations
+  \footnote{http://www.gnu.org/software/gsl/manual/}.
 \item \textbf{OMP\_NUM\_THREADS}: Controls the maximum number of threads
   available to the application. Different values were used ranging
-  from 3-8.
+  from 2-8.
 \item \textbf{OMP\_NESTED}: Indicates to the OpenMP environment whether
   nested threads are allowed. Some parts of the code support thread
   nesting. These parts can be optimised with setting this variable to
@@ -443,10 +395,15 @@ To summarise, the following command-line was used to run the
 application:
 
 \begin{verbatim}
-GSL_IEEE_MODE="double-precision,mask-underflow,mask-denormalized"; \
-  OMP_NUM_THREADS="8";OMP_NESTED="true" \
+GSL_IEEE_MODE="double-precision,mask-underflow,mask-denormalized" \
     ./src/main/pdepoiss_solv -d 0.01
 \end{verbatim}
+
+Additionally, if OpenMP was compiled in, the variable
+\textit{OMP\_NUM\_THREADS} was set to 2, i.e., it was exported to the
+shell before executing the application. The configure script, however,
+did not recognise OpenMP on the IITAC cluster. So, the only option
+enabled on the IITAC cluster was \textit{--enable-mpi}.
 
 \chapter{Results}
 \label{cha:results}
@@ -496,8 +453,8 @@ one in parallel mode using the Message Passing Interface (MPI) with 16
 configured nodes. Both runs are configured with $\delta=0.01$ which
 yields 251 grid points. \prettyref{fig:approxPoiss} presents both
 graphs with the gradient on the surface illustrating the error
-\prettyref{eq:error} in the conjugate gradient method compared to the
-analytical solution \prettyref{eq:boundaryCond}.
+(\prettyref{eq:error}) in the conjugate gradient method compared to
+the analytical solution (\prettyref{eq:boundaryCond}).
 
 \begin{equation}
   \label{eq:error}
