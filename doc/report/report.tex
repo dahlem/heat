@@ -30,6 +30,7 @@
 \newrefformat{sec}{\hyperref[{#1}]{Section~\ref*{#1}}}
 \newrefformat{sub}{\hyperref[{#1}]{Section~\ref*{#1}}}
 \newrefformat{eq}{\hyperref[{#1}]{Equation~\ref*{#1}}}
+\newrefformat{tab}{\hyperref[{#1}]{Table~\ref*{#1}}}
 
 \author{Dominik Dahlem}
 \title{HPC 563: Classical Simulation}
@@ -53,6 +54,9 @@
   functions (i.e., \ccode{GSL_MAX} and \ccode{GSL_MIN}) and to control
   the floating point environment of the application.
 \item The cunit library was used to implement the unit tests.
+\item MPI is used to provide parallel execution using 1D decomposition
+  of the linear system into blocks of rows assigned to participating
+  nodes.
 \item The application was implemented with OpenMP support. The problem
   domain lends itself to multi-threaded programming, especially
   expensive operations such as the matrix-vector multiply and the
@@ -102,7 +106,7 @@ build those individually.
 
 \begin{itemize}
 \item Installing the application was not considered.
-\item To build the project with MPI support do:
+\item To build the project do one of the following:
   \begin{enumerate}
   \item No gcov, no tests, no MPI
 \begin{verbatim}
@@ -122,7 +126,7 @@ make
 make
 \end{verbatim}
     Compile the sources for hybrid execution, i.e., that means that
-    the courser tasks are distributed among several remote nodes,
+    the coarser tasks are distributed among several remote nodes,
     while the finer level is parallelised on a single machine with
     threads.
   \item No gcov
@@ -154,16 +158,17 @@ make
 
 The assignment is structured in the following way:
 \begin{verbatim}
-   - src       (the sources)
-   - test      (unit tests)
-   - doc       (doxygen generated code-documentation)
-      - eval   (gnuplot script and surface plots)
-      - report (the report)
+   - src          (the sources)
+   - test         (unit tests)
+   - doc          (documentation)
+      - coverage  (coverage analysis)
+      - eval      (gnuplot script and surface plots)
+      - report    (the report)
 \end{verbatim}
 
 A Doxygen configuration file is provided to generate the code
 documentation in HTML. doxygen support is integrated into the
-makefiles.  Run: make doxygen-doc
+makefiles.  Run: \verb=make doxygen-doc=
 
 \begin{verbatim}
    - doc
@@ -176,7 +181,7 @@ the implemented modules and the source files.
 
 The lcov coverage report is provided in the coverage folder. Though,
 only the infrastructural modules are tested, such as vector and matrix
-operations.
+operations and the conjugate gradient method.
 
 \chapter{Approach}
 \label{cha:approach}
@@ -259,7 +264,7 @@ having a global u-vector.
 \label{sec:openmp}
 
 Much of the effort in implementing the parallel conjugate gradient
-solver went into parallelising the course tasks among configured nodes
+solver went into parallelising the coarse tasks among configured nodes
 in a cluster with MPI. However, there still are operations on a finer
 scale that do not take advantage of multi-processor nodes. Therefore,
 the GNU profiler (gprof) was used in order to learn more about where
@@ -301,9 +306,9 @@ In order to improve the performance, the matrix-vector multiply
 contexts.
 
 The results of the speedup $S_{p}=T_{1}/T_{p}$ and the efficiency
-$E_{p}=S_{p}/p$ are presented in the following table.
+$E_{p}=S_{p}/p$ are presented in \prettyref{tab:thread-perf}.
 
-\begin{table}[htb]
+\begin{table}[h]
   \begin{tabular}{c || c c c}
     \textbf{Threads} ($p$) & \textbf{Execution Time} ($T$) & \textbf{Speedup} ($S$) &
     \textbf{Efficiency} ($E$) \\
@@ -316,7 +321,7 @@ $E_{p}=S_{p}/p$ are presented in the following table.
   \label{tab:thread-perf}
 \end{table}
 
-The results were recorded using a more fine-grained mess with a delta
+The results were recorded using a more fine-grained mesh with a delta
 value of $d=0.005$ which results in 501 grid points in both
 dimensions. These results show that the highest speedup is obtained
 with 2 threads. Using more threads involves a higher overhead for
@@ -443,7 +448,7 @@ which results in the following graph
   \centering
   \psfrag{X}[B][B][1][0]{x}
   \psfrag{Y}[B][B][1][0]{y}
-  \includegraphics[scale=0.5]{./images/exact.eps}
+  \includegraphics{./images/exact.eps}
   \caption{Exact Solution of Poisson's Equation}
   \label{fig:exactPoiss}
 \end{figure}
@@ -472,6 +477,64 @@ the analytical solution (\prettyref{eq:boundaryCond}).
     $\bigtriangledown^{2}u=-f$}
   \label{fig:approxPoiss}
 \end{figure}
+
+The error distribution of both the serial and parallel execution on
+the surface of \prettyref{fig:approxPoiss} are very similar. So
+similar in fact, that it is not distinguishable with the bare eye. The
+root directory contains an awk script that streams through the error
+column in the output file and presents the maximum error. The
+difference is in the 15th decimal digit.
+
+Surprisingly, the error distribution on the surface of both plots is
+not smooth. The reason for that is the relatively low default error
+threshold of $1e^{-6}$ which results in ca. 400 conjugate gradient
+iterations. Increasing the error threshold to $1e^{-12}$ will produce
+a much smoother error surface (see \prettyref{fig:approxPoissSerial}),
+where the maximum error is in the centre of the plot (which is more
+what was expected in the first place).
+
+\begin{figure}[htb]
+  \centering
+  \psfrag{X}[B][B][1][0]{x}
+  \psfrag{Y}[B][B][1][0]{y}
+  \psfrag{ERR}[B][B][1][270]{$\epsilon$}
+  \includegraphics{./images/poiss_1e-12.eps}
+  \caption{Serial Approximation of Poisson's Equation with an error
+    threshold of $1e^{-12}$}
+  \label{fig:approxPoissSerial}
+\end{figure}
+
+\chapter{Problems}
+\label{cha:problems}
+
+During the course of the implementation, some problems were
+encountered and dealt with. Some others were not tackled. The latter
+ones are:
+
+\begin{itemize}
+\item The parallel implementation does not take advantage of the
+  symmetry of the matrix. That means that the matrix was set up as a
+  5-band general matrix and solved respectively.
+\item In some configurations floating point exceptions occur and
+  manifest themselves as NaNs in the result.
+\end{itemize}
+
+The latter one is a major flaw that is quite difficult to
+pinpoint. In an early implementation of the solution, a similar error
+occurred in the serial version, because the conjugate iteration was
+performed until a maximum loop count of the dimension of the matrix
+was exceeded. This lead to floating point operations with very small
+numbers and was discovered using gdb to handle the \textit{SIGFPE}
+signal. Knowing, the source of the floating point exception hinted at
+a more optimal conjugate gradient method implementation which did take
+the error threshold into account. This reduced the iteration count
+significantly and avoided floating operation of very small
+numbers. The conjugate gradient method would stop once this error
+threshold was exceeded.
+
+However, debugging the parallel version proved too difficult to
+finally resolve this issue.
+
 
 \end{document}
 
