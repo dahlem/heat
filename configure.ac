@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([563_pde_poisson],
-        [1.0],
+        [1.2],
         [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie])
 
 
@@ -61,6 +61,9 @@ if test x$GSLLIB = xyes; then
    AC_CHECK_LIB([m],[cos])
    AC_CHECK_LIB([gslcblas],[cblas_dgemm])
    AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+else
+   AC_CHECK_HEADERS([fenv.h])
+   AC_CHECK_FUNCS([fesetround])
 fi
 AM_CONDITIONAL(HAVE_GSL, test "x$GSLLIB" = xyes)
 
