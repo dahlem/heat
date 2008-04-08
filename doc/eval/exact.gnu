@@ -2,9 +2,8 @@ set terminal postscript eps enhanced colour solid rounded
 set output 'exact.eps'
 
 # change the angle the plot is shown
-set view 60, 30, 1, 1
+set view ,, 0.7, 1
 
-# set ranges
 set isosample 50, 50
 
 set yrange [-2:0.5]
