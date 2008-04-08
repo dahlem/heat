@@ -35,6 +35,8 @@
 #ifdef HAVE_LIBGSL
 # include <gsl/gsl_math.h>
 # include <gsl/gsl_ieee_utils.h>
+#else
+# include <fenv.h>
 #endif /* HAVE_LIBGSL */
 
 #include <math.h>
@@ -101,6 +103,8 @@ int main(int argc, char *argv[])
 #ifdef HAVE_LIBGSL
     /* read GSL_IEEE_MODE */
     gsl_ieee_env_setup();
+#else
+    fesetround(FE_UPWARD);
 #endif /* HAVE_LIBGSL */
 
     /* specify the domain */
