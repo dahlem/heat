@@ -12,6 +12,7 @@ report_src = report.tex
 
 report_images =                                                      \
 	images/exact.eps                                             \
+	images/poiss_1e-12.eps                                       \
 	images/poiss.eps
 
 EXTRA_DIST = $(report_src) report.pdf
