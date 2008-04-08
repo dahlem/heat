@@ -24,13 +24,11 @@ MAINTAINERCLEANFILES = "configure Makefile.in semantic.cache"
 MOSTLYCLEANFILES = ${DX_CLEANFILES}
 
 EXTRA_DIST = \
-	$(srcdir)/coverage/ \
+	$(srcdir)/doc/coverage/ \
 	$(srcdir)/m4/ \
 	$(srcdir)/mk/ \
+	$(srcdir)/max_error.awk \
 	$(srcdir)/poiss.pbs
-
-clean-local:
-	rm -rf doc/doxygen/html
 
 dist-hook:
 	rm -rf `find $(distdir)/doc -name .gitignore`
@@ -38,7 +36,7 @@ dist-hook:
 
 if GCOV
 
-COVOUT=./coverage
+COVOUT=./doc/coverage
 LCOVOUT=$(COVOUT)/lcov-reports
 GENHTMLOUT=$(LCOVOUT)/html
 
@@ -50,8 +48,15 @@ lcov-prepare:
 lcov: clean lcov-prepare all
 	cd test && $(MAKE) $(AM_MAKEFLAGS) lcov
 
+clean-local:
+	rm -rf doc/doxygen/html
+	rm -rf $(LCOVOUT)
+
 else
 lcov: ;
+
+clean-local:
+	rm -rf doc/doxygen/html
 
 endif
 
