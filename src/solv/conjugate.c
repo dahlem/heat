@@ -106,7 +106,7 @@ int conjugate(matrix *A, vector *b, vector *x, vector *x_bar, double err_thres)
 
         while (error > err_thres) {
 #ifdef NDEBUG
-            fprintf(stdout, "%d,%f", k, error);
+            fprintf(stdout, "%d,%f\n", k, error);
             fflush(stdout);
 #endif /* NDEBUG */
             /* \f$ v = A * p \f$ */
