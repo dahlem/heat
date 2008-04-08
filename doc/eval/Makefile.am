@@ -9,15 +9,18 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 eval_src =                                                           \
+	common.gnu                                                   \
 	poiss.gnu                                                    \
 	poiss-smooth.gnu                                             \
+	poiss_1e-12.gnu                                              \
 	exact.gnu                                                    \
 	serial.dat                                                   \
+	serial_1e-12.dat                                             \
 	parallel.dat
 
-EXTRA_DIST = $(eval_src) exact.eps poiss.eps
+EXTRA_DIST = $(eval_src)
 
-all-local: exact.eps poiss.eps
+all-local: exact.eps poiss.eps poiss_1e-12.eps
 
 clean-local:
 	rm -f *.eps
