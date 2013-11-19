@@ -5,7 +5,7 @@
 #define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the <fenv.h> header file. */
-/* #undef HAVE_FENV_H */
+#define HAVE_FENV_H 1
 
 /* Define to 1 if you have the `fesetround' function. */
 /* #undef HAVE_FESETROUND */
@@ -14,16 +14,16 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the `gcov' library (-lgcov). */
-#define HAVE_LIBGCOV 1
+/* #undef HAVE_LIBGCOV */
 
 /* Define to 1 if you have the `gsl' library (-lgsl). */
-#define HAVE_LIBGSL 1
+/* #undef HAVE_LIBGSL */
 
 /* Define to 1 if you have the `gslcblas' library (-lgslcblas). */
-#define HAVE_LIBGSLCBLAS 1
+/* #undef HAVE_LIBGSLCBLAS */
 
 /* Define to 1 if you have the `m' library (-lm). */
-#define HAVE_LIBM 1
+/* #undef HAVE_LIBM */
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
@@ -36,7 +36,7 @@
 /* #undef HAVE_MPI */
 
 /* Define if OpenMP is enabled */
-/* #undef HAVE_OPENMP */
+#define HAVE_OPENMP 1
 
 /* Define to 1 if you have the `sqrt' function. */
 /* #undef HAVE_SQRT */
@@ -69,7 +69,7 @@
 #define PACKAGE "563_pde_poisson"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "Dominik Dahlem Dominik.Dahlem@cs.tcd.ie"
+#define PACKAGE_BUGREPORT "Dominik Dahlem Dominik.Dahlem@gmail.com"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "563_pde_poisson"
